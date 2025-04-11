@@ -2,32 +2,52 @@
 클러스터 분석 및 사용자 특성 생성 모듈
 """
 
-import numpy as np
 import pandas as pd
-from typing import Dict, List, Any, Tuple, Optional
-import json
+import numpy as np
 import os
+import sys
+import json
+from typing import Dict, List, Any, Tuple, Optional
 import logging
 from sklearn.preprocessing import StandardScaler
 from scipy.stats import ttest_ind
 
-logger = logging.getLogger(__name__)
+# 상대 경로 임포트를 절대 경로 임포트로 변경
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from utils import setup_logger
+
+logger = setup_logger(__name__)
 
 class ClusterFeatureAnalyzer:
     """클러스터별 특성 분석 및 사용자 특징 추출 클래스"""
     
     # 사용자 특성 정의
     USER_TRAITS = {
-        'nft_enthusiast': '높은 NFT 활동과 보유량을 가진 사용자',
-        'defi_trader': 'DeFi 프로토콜과 상호작용이 많은 사용자',
-        'heavy_trader': '높은 거래량과 빈번한 트랜잭션을 보이는 사용자',
-        'light_user': '적은 활동량과 단순한 상호작용을 보이는 사용자',
-        'hodler': '장기 보유 성향을 보이는 사용자',
-        'token_collector': '다양한 토큰을 보유하는 사용자',
-        'active_social': '다양한 상대방과 상호작용하는 사용자',
-        'gas_optimizer': '가스비를 효율적으로 사용하는 사용자',
-        'gas_spender': '가스비를 많이 사용하는 사용자',
-        'new_user': '최근에 활동을 시작한 사용자'
+        # 금융 vs 창작 축
+        'defi_focus': 'DeFi 프로토콜 활동과 금융 거래에 중점을 둔 사용자 (D)',
+        'nft_focus': 'NFT 수집과 창작 활동에 중점을 둔 사용자 (N)',
+        
+        # 트레이딩 vs 홀딩 축
+        'short_term_trader': '단기 거래와 빈번한 트랜잭션을 보이는 사용자 (T)',
+        'long_term_holder': '장기 보유 성향과 낮은 거래 빈도를 보이는 사용자 (H)',
+        
+        # 위험 vs 안정성 축
+        'risk_taking': '새로운 프로토콜 사용과 고위험 활동을 선호하는 사용자 (A)',
+        'security_focused': '검증된 프로토콜만 사용하고 안정적인 자산을 선호하는 사용자 (S)',
+        
+        # 커뮤니티 vs 독립성 축
+        'community_builder': '다양한 DAO 참여와 사회적 상호작용이 많은 사용자 (C)',
+        'independent_actor': '독립적인 활동을 선호하고 상호작용이 제한적인 사용자 (I)',
+        
+        # 복합 유형 예시
+        'defi_trader_risk': 'DeFi에서 단기 거래와 위험 감수 성향을 보이는 사용자 (D-T-A)',
+        'nft_holder_community': 'NFT 장기 보유와 커뮤니티 활동에 중점을 두는 사용자 (N-H-C)',
+        'defi_holder_security': '안정적인 DeFi 프로토콜에 장기 투자하는 사용자 (D-H-S)',
+        'nft_trader_risk': '위험을 감수하며 NFT 거래를 활발히 하는 사용자 (N-T-A)',
+        'defi_holder_community': 'DeFi 장기 투자와 DAO 참여가 활발한 사용자 (D-H-C)',
+        'nft_holder_independent': 'NFT를 장기 보유하며 독립적으로 활동하는 사용자 (N-H-I)',
+        'defi_trader_independent': 'DeFi 단기 거래를 독립적으로 수행하는 사용자 (D-T-I)',
+        'nft_trader_community': 'NFT 거래와 커뮤니티 활동이 모두 활발한 사용자 (N-T-C)'
     }
     
     def __init__(self, output_dir: str = 'cluster_profiles'):
@@ -282,76 +302,112 @@ class ClusterFeatureAnalyzer:
         """
         user_traits = {}
         
-        # NFT 애호가
+        # 1. 금융 vs 창작 축 (D-N)
+        
+        # DeFi 포커스 (D)
+        defi_score = 0.0
+        if 'defi_activity' in specialized_traits:
+            defi_score += specialized_traits['defi_activity'].get('percentile', 0) * 0.6
+        defi_score += min(metrics.get('defi_interaction_count', 0) / 10, 0.4)  # DeFi 상호작용
+        user_traits['defi_focus'] = float(defi_score)
+        
+        # NFT 포커스 (N)
         nft_score = 0.0
         if 'nft_activity' in specialized_traits:
             nft_score += specialized_traits['nft_activity'].get('percentile', 0) * 0.6
         nft_score += min(metrics.get('nft_ratio', 0) * 10, 0.4)  # NFT 비율
-        user_traits['nft_enthusiast'] = float(nft_score)
+        user_traits['nft_focus'] = float(nft_score)
         
-        # DeFi 트레이더
-        defi_score = 0.0
-        if 'defi_activity' in specialized_traits:
-            defi_score += specialized_traits['defi_activity'].get('percentile', 0) * 0.7
-        defi_score += min(metrics.get('defi_interaction_count', 0) / 10, 0.3)  # DeFi 상호작용
-        user_traits['defi_trader'] = float(defi_score)
+        # 2. 트레이딩 vs 홀딩 축 (T-H)
         
-        # 헤비 트레이더
-        heavy_score = 0.0
+        # 단기 트레이더 (T)
+        trader_score = 0.0
         if 'transaction_volume' in specialized_traits:
-            heavy_score += specialized_traits['transaction_volume'].get('percentile', 0) * 0.5
-        if 'transaction_value' in specialized_traits:
-            heavy_score += specialized_traits['transaction_value'].get('percentile', 0) * 0.3
-        heavy_score += min(metrics.get('txn_per_day', 0) / 20, 0.2)  # 일일 트랜잭션
-        user_traits['heavy_trader'] = float(heavy_score)
+            trader_score += specialized_traits['transaction_volume'].get('percentile', 0) * 0.5
+        trader_score += min(metrics.get('txn_per_day', 0) / 10, 0.5)  # 일일 트랜잭션
+        user_traits['short_term_trader'] = float(trader_score)
         
-        # 라이트 유저 (헤비 트레이더와 반대)
-        light_score = 1.0 - heavy_score
-        user_traits['light_user'] = float(light_score)
-        
-        # 호들러 (장기 보유자)
-        hodler_score = 0.0
+        # 장기 보유자 (H)
+        holder_score = 0.0
         if 'holding_behavior' in specialized_traits:
-            hodler_score += specialized_traits['holding_behavior'].get('percentile', 0) * 0.6
-        # 트랜잭션 빈도가 낮을수록 hodler 점수 높음
-        hodler_score += max(0, 0.4 * (1 - min(metrics.get('txn_per_day', 0) / 10, 1)))
-        user_traits['hodler'] = float(hodler_score)
+            holder_score += specialized_traits['holding_behavior'].get('percentile', 0) * 0.6
+        # 트랜잭션 빈도가 낮을수록 holder 점수 높음
+        holder_score += max(0, 0.4 * (1 - min(metrics.get('txn_per_day', 0) / 5, 1)))
+        user_traits['long_term_holder'] = float(holder_score)
         
-        # 토큰 컬렉터
-        collector_score = 0.0
-        if 'diversity' in specialized_traits:
-            collector_score += specialized_traits['diversity'].get('percentile', 0) * 0.5
-        collector_score += min(metrics.get('token_count', 0) / 20, 0.5)  # 토큰 수
-        user_traits['token_collector'] = float(collector_score)
+        # 3. 위험 vs 안정성 축 (A-S)
         
-        # 활발한 사회적 상호작용
-        social_score = 0.0
-        social_score += min(metrics.get('unique_counterparties', 0) / 50, 0.7)  # 상대방 수
-        social_score += min(metrics.get('unique_contracts', 0) / 30, 0.3)  # 컨트랙트 수
-        user_traits['active_social'] = float(social_score)
+        # 위험 감수 (A)
+        risk_score = 0.0
+        if 'new_protocols' in specialized_traits:
+            risk_score += specialized_traits['new_protocols'].get('percentile', 0) * 0.4
+        # 다양한 컨트랙트와 상호작용할수록 위험 감수 성향
+        risk_score += min(metrics.get('unique_contracts', 0) / 30, 0.3)
+        # 높은 변동성은 위험 감수 성향 암시
+        if 'value_std' in metrics and 'avg_txn_value' in metrics and metrics['avg_txn_value'] > 0:
+            volatility = metrics['value_std'] / metrics['avg_txn_value']
+            risk_score += min(volatility / 5, 0.3)
+        user_traits['risk_taking'] = float(risk_score)
         
-        # 가스 최적화 사용자 (가스 효율성이 높을수록)
-        gas_optimizer_score = 0.0
-        if 'efficiency' in specialized_traits:
-            gas_score = 1 - specialized_traits['efficiency'].get('percentile', 0.5)  # 낮을수록 효율적
-            gas_optimizer_score += gas_score * 0.8
-        gas_optimizer_score += 0.2 * (1 - min(metrics.get('gas_to_value_ratio', 0) / 0.1, 1))
-        user_traits['gas_optimizer'] = float(gas_optimizer_score)
+        # 보안 중심 (S)
+        security_score = 0.0
+        # 안정적인 자산 선호, 검증된 컨트랙트 사용
+        security_score = 1.0 - risk_score * 0.7  # 완전한 반대는 아님
+        if 'established_protocols' in specialized_traits:
+            security_score += specialized_traits['established_protocols'].get('percentile', 0) * 0.3
+        user_traits['security_focused'] = float(security_score)
         
-        # 가스 다량 사용자 (가스 비용이 높을수록)
-        gas_spender_score = 1.0 - gas_optimizer_score
-        user_traits['gas_spender'] = float(gas_spender_score)
+        # 4. 커뮤니티 vs 독립성 축 (C-I)
         
-        # 신규 사용자
-        new_user_score = 0.0
-        if 'recency' in specialized_traits:
-            # 최근 활동이 가까울수록 점수 높음
-            recency_percentile = 1 - specialized_traits['recency'].get('percentile', 0.5)
-            new_user_score += recency_percentile * 0.7
-        # 계정 나이가 짧을수록 신규 사용자
-        days_factor = max(0, 1 - metrics.get('account_age_days', 365) / 365)
-        new_user_score += days_factor * 0.3
-        user_traits['new_user'] = float(new_user_score)
+        # 커뮤니티 빌더 (C)
+        community_score = 0.0
+        # 다양한 상대방과 상호작용
+        community_score += min(metrics.get('unique_counterparties', 0) / 50, 0.5)
+        if 'social_interaction' in specialized_traits:
+            community_score += specialized_traits['social_interaction'].get('percentile', 0) * 0.5
+        user_traits['community_builder'] = float(community_score)
+        
+        # 독립적 행위자 (I)
+        independent_score = 0.0
+        # 제한된 상호작용
+        independent_score = 1.0 - community_score * 0.8  # 완전한 반대는 아님
+        if 'solo_activity' in specialized_traits:
+            independent_score += specialized_traits['solo_activity'].get('percentile', 0) * 0.2
+        user_traits['independent_actor'] = float(independent_score)
+        
+        # 5. 복합 유형 계산
+        
+        # DeFi-Trader-Risk (D-T-A)
+        defi_trader_risk = (defi_score * 0.4 + trader_score * 0.3 + risk_score * 0.3)
+        user_traits['defi_trader_risk'] = float(defi_trader_risk)
+        
+        # NFT-Holder-Community (N-H-C)
+        nft_holder_community = (nft_score * 0.4 + holder_score * 0.3 + community_score * 0.3)
+        user_traits['nft_holder_community'] = float(nft_holder_community)
+        
+        # DeFi-Holder-Security (D-H-S)
+        defi_holder_security = (defi_score * 0.4 + holder_score * 0.3 + security_score * 0.3)
+        user_traits['defi_holder_security'] = float(defi_holder_security)
+        
+        # NFT-Trader-Risk (N-T-A)
+        nft_trader_risk = (nft_score * 0.4 + trader_score * 0.3 + risk_score * 0.3)
+        user_traits['nft_trader_risk'] = float(nft_trader_risk)
+        
+        # DeFi-Holder-Community (D-H-C)
+        defi_holder_community = (defi_score * 0.4 + holder_score * 0.3 + community_score * 0.3)
+        user_traits['defi_holder_community'] = float(defi_holder_community)
+        
+        # NFT-Holder-Independent (N-H-I)
+        nft_holder_independent = (nft_score * 0.4 + holder_score * 0.3 + independent_score * 0.3)
+        user_traits['nft_holder_independent'] = float(nft_holder_independent)
+        
+        # DeFi-Trader-Independent (D-T-I)
+        defi_trader_independent = (defi_score * 0.4 + trader_score * 0.3 + independent_score * 0.3)
+        user_traits['defi_trader_independent'] = float(defi_trader_independent)
+        
+        # NFT-Trader-Community (N-T-C)
+        nft_trader_community = (nft_score * 0.4 + trader_score * 0.3 + community_score * 0.3)
+        user_traits['nft_trader_community'] = float(nft_trader_community)
         
         return user_traits
     
@@ -423,57 +479,81 @@ class ClusterFeatureAnalyzer:
             'unique_contracts': features.get('unique_contracts', 0),
             'unique_counterparties': features.get('unique_counterparties', 0),
             'avg_txn_value': features.get('avg_txn_value', 0),
+            'value_std': features.get('value_std', 0),
             'gas_to_value_ratio': features.get('gas_to_value_ratio', 0),
             'account_age_days': features.get('account_age_days', 0),
             'days_since_last_activity': features.get('days_since_last_activity', 0)
         }
         
-        # 모든 특성에 대한 스코어 계산
-        nft_score = min(1.0, features.get('nft_ratio', 0) * 5 + 
-                        features.get('nft_count', 0) / 10)
+        # 1. 금융 vs 창작 축 (D-N)
         
+        # DeFi 포커스 (D)
         defi_score = min(1.0, features.get('defi_interaction_count', 0) / 20)
         
-        heavy_score = min(1.0, 
-                         features.get('txn_per_day', 0) / 10 * 0.5 + 
-                         features.get('total_txn_count', 0) / 100 * 0.3 + 
-                         min(features.get('avg_txn_value', 0) / 1000, 1.0) * 0.2)
+        # NFT 포커스 (N)
+        nft_score = min(1.0, features.get('nft_ratio', 0) * 5 + 
+                       features.get('nft_count', 0) / 10)
         
-        light_score = 1.0 - heavy_score
+        # 2. 트레이딩 vs 홀딩 축 (T-H)
         
-        hodler_score = min(1.0, 
+        # 단기 트레이더 (T)
+        trader_score = min(1.0, 
+                          features.get('txn_per_day', 0) / 10 * 0.6 + 
+                          features.get('total_txn_count', 0) / 100 * 0.4)
+        
+        # 장기 보유자 (H)
+        holder_score = min(1.0, 
                           features.get('account_age_days', 0) / 365 * 0.5 + 
                           (1 - min(features.get('txn_per_day', 0) / 5, 1)) * 0.5)
         
-        collector_score = min(1.0, 
-                             features.get('token_count', 0) / 20 * 0.6 + 
-                             features.get('erc20_count', 0) / 15 * 0.4)
+        # 3. 위험 vs 안정성 축 (A-S)
         
-        social_score = min(1.0, 
-                          features.get('unique_counterparties', 0) / 50 * 0.7 + 
-                          features.get('unique_contracts', 0) / 30 * 0.3)
+        # 위험 감수 (A)
+        risk_score = 0.0
+        # 다양한 컨트랙트와 상호작용할수록 위험 감수 성향
+        risk_score += min(features.get('unique_contracts', 0) / 30, 0.5)
+        # 높은 변동성은 위험 감수 성향 암시
+        if metrics['avg_txn_value'] > 0:
+            volatility = metrics['value_std'] / metrics['avg_txn_value']
+            risk_score += min(volatility / 5, 0.5)
+        risk_score = min(1.0, risk_score)
         
-        gas_ratio = features.get('gas_to_value_ratio', 0)
-        gas_optimizer_score = 1.0 - min(1.0, gas_ratio / 0.1)
+        # 보안 중심 (S)
+        security_score = 1.0 - risk_score * 0.7  # 완전한 반대는 아님
         
-        gas_spender_score = 1.0 - gas_optimizer_score
+        # 4. 커뮤니티 vs 독립성 축 (C-I)
         
-        new_user_score = min(1.0, 
-                            (1 - min(features.get('account_age_days', 0) / 90, 1)) * 0.7 + 
-                            (1 - min(features.get('days_since_last_activity', 0) / 30, 1)) * 0.3)
+        # 커뮤니티 빌더 (C)
+        community_score = min(1.0, 
+                             features.get('unique_counterparties', 0) / 50 * 0.7 + 
+                             features.get('unique_contracts', 0) / 30 * 0.3)
+        
+        # 독립적 행위자 (I)
+        independent_score = 1.0 - community_score * 0.8  # 완전한 반대는 아님
+        
+        # 5. 복합 유형 계산
         
         # 결과 사용자 특성 점수
         user_traits = {
-            'nft_enthusiast': float(nft_score),
-            'defi_trader': float(defi_score),
-            'heavy_trader': float(heavy_score),
-            'light_user': float(light_score),
-            'hodler': float(hodler_score),
-            'token_collector': float(collector_score),
-            'active_social': float(social_score),
-            'gas_optimizer': float(gas_optimizer_score),
-            'gas_spender': float(gas_spender_score),
-            'new_user': float(new_user_score)
+            # 기본 축
+            'defi_focus': float(defi_score),
+            'nft_focus': float(nft_score),
+            'short_term_trader': float(trader_score),
+            'long_term_holder': float(holder_score),
+            'risk_taking': float(risk_score),
+            'security_focused': float(security_score),
+            'community_builder': float(community_score),
+            'independent_actor': float(independent_score),
+            
+            # 복합 유형
+            'defi_trader_risk': float((defi_score * 0.4 + trader_score * 0.3 + risk_score * 0.3)),
+            'nft_holder_community': float((nft_score * 0.4 + holder_score * 0.3 + community_score * 0.3)),
+            'defi_holder_security': float((defi_score * 0.4 + holder_score * 0.3 + security_score * 0.3)),
+            'nft_trader_risk': float((nft_score * 0.4 + trader_score * 0.3 + risk_score * 0.3)),
+            'defi_holder_community': float((defi_score * 0.4 + holder_score * 0.3 + community_score * 0.3)),
+            'nft_holder_independent': float((nft_score * 0.4 + holder_score * 0.3 + independent_score * 0.3)),
+            'defi_trader_independent': float((defi_score * 0.4 + trader_score * 0.3 + independent_score * 0.3)),
+            'nft_trader_community': float((nft_score * 0.4 + trader_score * 0.3 + community_score * 0.3))
         }
         
         return user_traits

@@ -1,20 +1,26 @@
 """
-비지도 학습 클러스터링 알고리즘 모듈
+블록체인 데이터를 기반으로 사용자 클러스터링을 수행하는 모듈
 """
 
-import numpy as np
 import pandas as pd
-from typing import Dict, List, Any, Tuple, Optional
-import pickle
+import numpy as np
 import os
-import logging
+import sys
+import joblib
+import pickle
+from typing import Dict, List, Any, Tuple, Optional
+from datetime import datetime
 from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering
 from sklearn.mixture import GaussianMixture
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
-import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
 
-logger = logging.getLogger(__name__)
+# 상대 경로 임포트를 절대 경로 임포트로 변경
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from utils import setup_logger
+
+logger = setup_logger(__name__)
 
 class ClusteringModel:
     """유저 프로필 클러스터링 모델 클래스"""

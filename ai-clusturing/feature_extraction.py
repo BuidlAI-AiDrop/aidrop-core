@@ -5,9 +5,16 @@
 import pandas as pd
 import numpy as np
 from typing import Dict, List, Any, Optional, Tuple
-import logging
+import os
+import sys
+import time
+from datetime import datetime
 
-logger = logging.getLogger(__name__)
+# 상대 경로 임포트를 절대 경로 임포트로 변경
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from utils import setup_logger
+
+logger = setup_logger(__name__)
 
 class FeatureExtractor:
     """클러스터링을 위한 특성 추출 클래스"""
@@ -86,7 +93,6 @@ class FeatureExtractor:
                 features['interval_std'] = float(intervals.std()) if len(intervals) > 1 else 0
                 
                 # 최근성 지표
-                import time
                 current_time = int(time.time())
                 features['days_since_last_activity'] = (current_time - timestamps[-1]) / 86400
             
@@ -263,4 +269,6 @@ class FeatureExtractor:
         result_df = pd.concat([features_df, scaled_df], axis=1)
         
         self.logger.info(f"특성 전처리 완료: {len(result_df.columns)} 개 특성")
-        return result_df, scaler 
+        # 스케일러는 내부 속성으로 저장하고 DataFrame만 반환
+        self._scaler = scaler
+        return result_df 

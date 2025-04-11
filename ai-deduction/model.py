@@ -2,15 +2,45 @@
 사용자 분류를 위한 AI 모델 모듈
 """
 
-import os
-import pickle
-import numpy as np
 import pandas as pd
+import numpy as np
+import os
+import sys
+import pickle
+import json
 from typing import Dict, List, Any, Optional, Tuple
+from datetime import datetime
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.cluster import KMeans, DBSCAN
 from sklearn.preprocessing import StandardScaler
-from .utils import setup_logger, get_model_path
+from utils import setup_logger
+
+# 상대 경로 임포트를 절대 경로 임포트로 변경
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# get_model_path 함수 직접 정의
+def get_model_path(model_name: str, version: str = 'latest') -> str:
+    """모델 파일 경로 반환"""
+    models_dir = 'models'
+    os.makedirs(models_dir, exist_ok=True)
+    
+    if version == 'latest':
+        # 최신 버전 찾기
+        versions = [d for d in os.listdir(models_dir) 
+                   if os.path.isdir(os.path.join(models_dir, d)) and 
+                   os.path.exists(os.path.join(models_dir, d, f"{model_name}.pkl"))]
+        
+        if not versions:
+            raise FileNotFoundError(f"No versions found for model {model_name}")
+        
+        version = sorted(versions)[-1]
+    
+    model_path = os.path.join(models_dir, version, f"{model_name}.pkl")
+    
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"Model file not found: {model_path}")
+    
+    return model_path
 
 logger = setup_logger(__name__)
 
@@ -31,7 +61,120 @@ class UserClassificationModel:
         self.feature_names = None
         self.label_encoder = None
         self.clustering_model = None
+    
+    def train(self, X, y):
+        """
+        모델 훈련
         
+        Args:
+            X: 특성 행렬
+            y: 타겟 레이블
+        
+        Returns:
+            훈련된 모델 객체
+        """
+        self.logger.info(f"모델 훈련 시작: {self.model_name}")
+        
+        # 특성 이름 저장
+        self.feature_names = X.columns.tolist()
+        
+        # 스케일러 적용
+        self.scaler = StandardScaler()
+        X_scaled = self.scaler.fit_transform(X)
+        
+        # 모델 초기화 및 훈련
+        self.model = RandomForestClassifier(n_estimators=100, random_state=42)
+        self.model.fit(X_scaled, y)
+        
+        self.logger.info(f"모델 훈련 완료: {self.model_name}")
+        return self.model
+    
+    def evaluate(self, X_test, y_test):
+        """
+        모델 평가
+        
+        Args:
+            X_test: 테스트 특성 행렬
+            y_test: 테스트 레이블
+            
+        Returns:
+            정확도 (float)
+        """
+        if self.model is None:
+            self.logger.error("모델이 훈련되지 않았습니다.")
+            return 0.0
+            
+        # 테스트 데이터 스케일링
+        X_test_scaled = self.scaler.transform(X_test)
+        
+        # 예측
+        y_pred = self.model.predict(X_test_scaled)
+        
+        # 정확도 계산
+        from sklearn.metrics import accuracy_score
+        accuracy = accuracy_score(y_test, y_pred)
+        
+        self.logger.info(f"모델 평가 완료, 정확도: {accuracy:.4f}")
+        return accuracy
+    
+    def get_feature_importance(self):
+        """
+        특성 중요도 반환
+        
+        Returns:
+            특성 중요도 딕셔너리
+        """
+        if self.model is None or not hasattr(self.model, 'feature_importances_'):
+            self.logger.error("모델이 훈련되지 않았거나 특성 중요도를 제공하지 않습니다.")
+            return {}
+            
+        feature_importance = {}
+        for i, feature in enumerate(self.feature_names):
+            feature_importance[feature] = float(self.model.feature_importances_[i])
+            
+        return feature_importance
+    
+    def save(self, model_dir='./models'):
+        """
+        모델 저장
+        
+        Args:
+            model_dir: 모델 저장 디렉토리
+            
+        Returns:
+            저장된 모델 경로
+        """
+        if self.model is None:
+            self.logger.error("저장할 모델이 없습니다.")
+            return None
+            
+        # 버전 디렉토리 생성
+        version = datetime.now().strftime('%Y%m%d')
+        save_path = os.path.join(model_dir, version)
+        os.makedirs(save_path, exist_ok=True)
+        
+        # 모델 데이터 구성
+        model_data = {
+            'model': self.model,
+            'scaler': self.scaler,
+            'feature_names': self.feature_names,
+            'label_encoder': self.label_encoder,
+            'clustering_model': self.clustering_model,
+            'metadata': {
+                'created_at': datetime.now().isoformat(),
+                'model_type': type(self.model).__name__,
+                'feature_count': len(self.feature_names)
+            }
+        }
+        
+        # 모델 저장
+        model_path = os.path.join(save_path, f"{self.model_name}.pkl")
+        with open(model_path, 'wb') as f:
+            pickle.dump(model_data, f)
+            
+        self.logger.info(f"모델 저장 완료: {model_path}")
+        return model_path
+    
     def load(self) -> bool:
         """저장된 모델 로드"""
         try:

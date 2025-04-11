@@ -1,0 +1,697 @@
+{
+  "cluster_0": {
+    "size": 13,
+    "percentage": 13.0,
+    "significant_features": {
+      "txn_per_day_log": {
+        "p_value": 6.981911414987993e-19,
+        "direction": "lower",
+        "magnitude": 0.8345567597993191,
+        "cluster_mean": 0.07645515802492502,
+        "overall_mean": 0.4621231906011132
+      },
+      "txn_per_day_log_scaled": {
+        "p_value": 6.981911414988045e-19,
+        "direction": "lower",
+        "magnitude": 7.6923076923077085,
+        "cluster_mean": -1.049866966705145,
+        "overall_mean": 0.1568766731858259
+      },
+      "txn_per_day": {
+        "p_value": 5.339336979157141e-16,
+        "direction": "lower",
+        "magnitude": 0.8809575314600259,
+        "cluster_mean": 0.07974301693503584,
+        "overall_mean": 0.6698703237009765
+      },
+      "txn_per_day_scaled": {
+        "p_value": 5.339336979157199e-16,
+        "direction": "lower",
+        "magnitude": 7.692307692307687,
+        "cluster_mean": -0.9356090593110667,
+        "overall_mean": 0.13980365254073424
+      },
+      "total_txn_count": {
+        "p_value": 1.737387567878314e-15,
+        "direction": "lower",
+        "magnitude": 0.6360050206204053,
+        "cluster_mean": 26.923076923076923,
+        "overall_mean": 73.96551724137932
+      },
+      "outgoing_count": {
+        "p_value": 1.737387567878314e-15,
+        "direction": "lower",
+        "magnitude": 0.6360050206204053,
+        "cluster_mean": 26.923076923076923,
+        "overall_mean": 73.96551724137932
+      },
+      "total_txn_count_scaled": {
+        "p_value": 1.737387567878332e-15,
+        "direction": "lower",
+        "magnitude": 7.692307692307685,
+        "cluster_mean": -1.1223064022999638,
+        "overall_mean": 0.16770095666551202
+      },
+      "outgoing_count_scaled": {
+        "p_value": 1.737387567878332e-15,
+        "direction": "lower",
+        "magnitude": 7.692307692307685,
+        "cluster_mean": -1.1223064022999638,
+        "overall_mean": 0.16770095666551202
+      },
+      "token_count_scaled": {
+        "p_value": 2.3653673713068468e-15,
+        "direction": "lower",
+        "magnitude": 7.692307692307693,
+        "cluster_mean": -1.0855371349835305,
+        "overall_mean": 0.16220669833087234
+      },
+      "token_count": {
+        "p_value": 2.3653673713068476e-15,
+        "direction": "lower",
+        "magnitude": 0.6878317642924519,
+        "cluster_mean": 14.923076923076923,
+        "overall_mean": 47.804597701149426
+      }
+    },
+    "specialized_traits": {
+      "nft_activity": {
+        "score": -0.27517547629279476,
+        "percentile": 0.0
+      },
+      "defi_activity": {
+        "score": -0.5185390149418926,
+        "percentile": 0.0
+      },
+      "transaction_volume": {
+        "score": -0.7584812760402155,
+        "percentile": 0.0
+      },
+      "transaction_value": {
+        "score": -0.03204279251106201,
+        "percentile": 0.0
+      },
+      "diversity": {
+        "score": -0.2801564433512875,
+        "percentile": 0.0
+      },
+      "efficiency": {
+        "score": 0.0,
+        "percentile": 0.0
+      },
+      "holding_behavior": {
+        "score": 0.028457019750676344,
+        "percentile": 0.0
+      },
+      "recency": {
+        "score": 6.3635900908592165,
+        "percentile": 0.8
+      }
+    },
+    "key_metrics": {
+      "txn_per_day": 0.07974301693503584,
+      "token_count": 14.923076923076923,
+      "nft_count": 0.0,
+      "nft_ratio": 0.0,
+      "defi_interaction_count": 6.153846153846154,
+      "unique_contracts": 0.0,
+      "unique_counterparties": 10.538461538461538,
+      "avg_txn_value": 7.433867686468806,
+      "gas_to_value_ratio": 0.0
+    },
+    "user_traits": {
+      "defi_focus": 0.4,
+      "nft_focus": 0.0,
+      "short_term_trader": 0.007974301693503584,
+      "long_term_holder": 0.3936205586451971,
+      "risk_taking": 0.0,
+      "security_focused": 1.0,
+      "community_builder": 0.21076923076923076,
+      "independent_actor": 0.8313846153846154,
+      "defi_trader_risk": 0.1623922905080511,
+      "nft_holder_community": 0.18131693682432837,
+      "defi_holder_security": 0.5780861675935591,
+      "nft_trader_risk": 0.002392290508051075,
+      "defi_holder_community": 0.3413169368243284,
+      "nft_holder_independent": 0.36750155220894376,
+      "defi_trader_independent": 0.4118076751234357,
+      "nft_trader_community": 0.06562305973882031
+    }
+  },
+  "cluster_1": {
+    "size": 20,
+    "percentage": 20.0,
+    "significant_features": {
+      "token_count_log_scaled": {
+        "p_value": 3.142861949032824e-16,
+        "direction": "higher",
+        "magnitude": -5.000000000000022,
+        "cluster_mean": 1.061955379178743,
+        "overall_mean": -0.26548884479468426
+      },
+      "token_count_log": {
+        "p_value": 3.1428619490328695e-16,
+        "direction": "higher",
+        "magnitude": 0.2765982342146732,
+        "cluster_mean": 4.333632714672827,
+        "overall_mean": 3.3946723397582907
+      },
+      "avg_txn_value": {
+        "p_value": 2.6006910491769677e-14,
+        "direction": "lower",
+        "magnitude": 0.8124818562116638,
+        "cluster_mean": 1.2097279948994937,
+        "overall_mean": 6.451258371376538
+      },
+      "avg_txn_value_scaled": {
+        "p_value": 2.6006910491769778e-14,
+        "direction": "lower",
+        "magnitude": 5.000000000000004,
+        "cluster_mean": -0.8606089625696871,
+        "overall_mean": 0.21515224064242155
+      },
+      "median_txn_value": {
+        "p_value": 3.9033377108098665e-13,
+        "direction": "lower",
+        "magnitude": 1.0,
+        "cluster_mean": 0.0,
+        "overall_mean": 1.0538438312500003
+      },
+      "median_txn_value_scaled": {
+        "p_value": 3.9033377108098665e-13,
+        "direction": "lower",
+        "magnitude": 5.0000000000000036,
+        "cluster_mean": -0.8013249042233117,
+        "overall_mean": 0.20033122605582773
+      },
+      "total_txn_count_log": {
+        "p_value": 2.011333596157875e-12,
+        "direction": "higher",
+        "magnitude": 0.1710212205839071,
+        "cluster_mean": 4.59391166554934,
+        "overall_mean": 3.922996086491648
+      },
+      "total_txn_count_log_scaled": {
+        "p_value": 2.011333596157875e-12,
+        "direction": "higher",
+        "magnitude": -4.999999999999989,
+        "cluster_mean": 0.8437387094604624,
+        "overall_mean": -0.21093467736511612
+      },
+      "avg_txn_value_log_scaled": {
+        "p_value": 7.265025282563502e-11,
+        "direction": "lower",
+        "magnitude": 5.000000000000002,
+        "cluster_mean": -0.8473180212322751,
+        "overall_mean": 0.21182950530806868
+      },
+      "avg_txn_value_log": {
+        "p_value": 7.265025282563556e-11,
+        "direction": "lower",
+        "magnitude": 0.5666703462478023,
+        "cluster_mean": 0.7325391337436701,
+        "overall_mean": 1.6904892785449142
+      }
+    },
+    "specialized_traits": {
+      "nft_activity": {
+        "score": 1.0746268656716418,
+        "percentile": 0.6
+      },
+      "defi_activity": {
+        "score": -0.657559198542805,
+        "percentile": 0.0
+      },
+      "transaction_volume": {
+        "score": 1.0755646304728201,
+        "percentile": 0.0
+      },
+      "transaction_value": {
+        "score": -0.7610207856727538,
+        "percentile": 0.0
+      },
+      "diversity": {
+        "score": 0.4463834315018997,
+        "percentile": 0.0
+      },
+      "efficiency": {
+        "score": 0.0,
+        "percentile": 0.0
+      },
+      "holding_behavior": {
+        "score": 0.24284092772776647,
+        "percentile": 0.0
+      },
+      "recency": {
+        "score": -0.8467609909249196,
+        "percentile": 0.0
+      }
+    },
+    "key_metrics": {
+      "txn_per_day": 1.137836082175462,
+      "token_count": 77.5,
+      "nft_count": 0.0,
+      "nft_ratio": 0.0,
+      "defi_interaction_count": 4.7,
+      "unique_contracts": 0.0,
+      "unique_counterparties": 13.4,
+      "avg_txn_value": 1.2097279948994937,
+      "gas_to_value_ratio": 0.0
+    },
+    "user_traits": {
+      "defi_focus": 0.4,
+      "nft_focus": 0.36,
+      "short_term_trader": 0.11378360821754621,
+      "long_term_holder": 0.30897311342596306,
+      "risk_taking": 0.0,
+      "security_focused": 1.0,
+      "community_builder": 0.268,
+      "independent_actor": 0.7856,
+      "defi_trader_risk": 0.1941350824652639,
+      "nft_holder_community": 0.3170919340277889,
+      "defi_holder_security": 0.5526919340277889,
+      "nft_trader_risk": 0.17813508246526386,
+      "defi_holder_community": 0.3330919340277889,
+      "nft_holder_independent": 0.4723719340277889,
+      "defi_trader_independent": 0.4298150824652639,
+      "nft_trader_community": 0.25853508246526385
+    }
+  },
+  "cluster_2": {
+    "size": 29,
+    "percentage": 28.999999999999996,
+    "significant_features": {
+      "max_txn_value_scaled": {
+        "p_value": 3.5139990790451967e-09,
+        "direction": "higher",
+        "magnitude": -3.4482758620689644,
+        "cluster_mean": 0.6480313438050385,
+        "overall_mean": -0.26468885873726933
+      },
+      "value_range_scaled": {
+        "p_value": 3.5139990790451967e-09,
+        "direction": "higher",
+        "magnitude": -3.4482758620689644,
+        "cluster_mean": 0.6480313438050385,
+        "overall_mean": -0.26468885873726933
+      },
+      "max_txn_value": {
+        "p_value": 3.5139990790452484e-09,
+        "direction": "higher",
+        "magnitude": 0.5474372153971697,
+        "cluster_mean": 88.24361968965516,
+        "overall_mean": 57.02565429577464
+      },
+      "value_range": {
+        "p_value": 3.5139990790452484e-09,
+        "direction": "higher",
+        "magnitude": 0.5474372153971697,
+        "cluster_mean": 88.24361968965516,
+        "overall_mean": 57.02565429577464
+      },
+      "avg_txn_value_log": {
+        "p_value": 6.774437956742216e-09,
+        "direction": "higher",
+        "magnitude": 0.7290576595006547,
+        "cluster_mean": 2.1393644228260382,
+        "overall_mean": 1.2373007985424145
+      },
+      "avg_txn_value_log_scaled": {
+        "p_value": 6.774437956742434e-09,
+        "direction": "higher",
+        "magnitude": -3.4482758620689644,
+        "cluster_mean": 0.7081235988690997,
+        "overall_mean": -0.28923358263667465
+      },
+      "token_count": {
+        "p_value": 1.1317419898163946e-08,
+        "direction": "lower",
+        "magnitude": 0.4961027796351132,
+        "cluster_mean": 25.620689655172413,
+        "overall_mean": 50.84507042253521
+      },
+      "token_count_scaled": {
+        "p_value": 1.1317419898163946e-08,
+        "direction": "lower",
+        "magnitude": 3.448275862068967,
+        "cluster_mean": -0.6795984800245116,
+        "overall_mean": 0.27758247775649053
+      },
+      "value_std": {
+        "p_value": 1.3436335935654148e-08,
+        "direction": "higher",
+        "magnitude": 0.8247086251778764,
+        "cluster_mean": 20.109689621795333,
+        "overall_mean": 11.020767559442538
+      },
+      "value_std_scaled": {
+        "p_value": 1.343633593565427e-08,
+        "direction": "higher",
+        "magnitude": -3.4482758620689618,
+        "cluster_mean": 0.7089311677053756,
+        "overall_mean": -0.2895634346965623
+      }
+    },
+    "specialized_traits": {
+      "nft_activity": {
+        "score": -0.2428392658509455,
+        "percentile": 0.0
+      },
+      "defi_activity": {
+        "score": -0.07836266624193683,
+        "percentile": 0.0
+      },
+      "transaction_volume": {
+        "score": -0.44195475843437704,
+        "percentile": 0.0
+      },
+      "transaction_value": {
+        "score": 0.5795922767504154,
+        "percentile": 0.0
+      },
+      "diversity": {
+        "score": -0.17001026612150957,
+        "percentile": 0.0
+      },
+      "efficiency": {
+        "score": 0.0,
+        "percentile": 0.0
+      },
+      "holding_behavior": {
+        "score": -0.20243154252204165,
+        "percentile": 0.0
+      },
+      "recency": {
+        "score": -0.3857671346245021,
+        "percentile": 0.0
+      }
+    },
+    "key_metrics": {
+      "txn_per_day": 0.34560926368313294,
+      "token_count": 25.620689655172413,
+      "nft_count": 0.0,
+      "nft_ratio": 0.0,
+      "defi_interaction_count": 11.241379310344827,
+      "unique_contracts": 0.0,
+      "unique_counterparties": 12.068965517241379,
+      "avg_txn_value": 8.458776696074613,
+      "gas_to_value_ratio": 0.0
+    },
+    "user_traits": {
+      "defi_focus": 0.4,
+      "nft_focus": 0.0,
+      "short_term_trader": 0.034560926368313295,
+      "long_term_holder": 0.37235125890534937,
+      "risk_taking": 0.0,
+      "security_focused": 1.0,
+      "community_builder": 0.24137931034482757,
+      "independent_actor": 0.806896551724138,
+      "defi_trader_risk": 0.17036827791049403,
+      "nft_holder_community": 0.18411917077505308,
+      "defi_holder_security": 0.5717053776716048,
+      "nft_trader_risk": 0.010368277910493988,
+      "defi_holder_community": 0.3441191707750531,
+      "nft_holder_independent": 0.3537743431888462,
+      "defi_trader_independent": 0.4124372434277354,
+      "nft_trader_community": 0.08278207101394225
+    }
+  },
+  "cluster_3": {
+    "size": 19,
+    "percentage": 19.0,
+    "significant_features": {
+      "avg_txn_value_log": {
+        "p_value": 1.2309186527672985e-28,
+        "direction": "lower",
+        "magnitude": 0.8473916638818827,
+        "cluster_mean": 0.2726409112128465,
+        "overall_mean": 1.786540094387932
+      },
+      "avg_txn_value_log_scaled": {
+        "p_value": 1.2309186527673245e-28,
+        "direction": "lower",
+        "magnitude": 5.2631578947368425,
+        "cluster_mean": -1.3557996656031166,
+        "overall_mean": 0.318027082055052
+      },
+      "value_std": {
+        "p_value": 2.837610414023032e-28,
+        "direction": "lower",
+        "magnitude": 0.9004196261479503,
+        "cluster_mean": 1.6405978906855196,
+        "overall_mean": 16.475112788018027
+      },
+      "value_std_scaled": {
+        "p_value": 2.8376104140230524e-28,
+        "direction": "lower",
+        "magnitude": 5.263157894736849,
+        "cluster_mean": -1.3200540384903119,
+        "overall_mean": 0.3096423053248875
+      },
+      "max_txn_value_scaled": {
+        "p_value": 3.8494380292990195e-21,
+        "direction": "lower",
+        "magnitude": 5.263157894736843,
+        "cluster_mean": -1.600136019160049,
+        "overall_mean": 0.375340547704209
+      },
+      "value_range_scaled": {
+        "p_value": 3.8494380292990195e-21,
+        "direction": "lower",
+        "magnitude": 5.263157894736843,
+        "cluster_mean": -1.600136019160049,
+        "overall_mean": 0.375340547704209
+      },
+      "max_txn_value": {
+        "p_value": 3.849438029299129e-21,
+        "direction": "lower",
+        "magnitude": 0.856189307322822,
+        "cluster_mean": 11.349067842105264,
+        "overall_mean": 78.91671774074074
+      },
+      "value_range": {
+        "p_value": 3.849438029299129e-21,
+        "direction": "lower",
+        "magnitude": 0.856189307322822,
+        "cluster_mean": 11.349067842105264,
+        "overall_mean": 78.91671774074074
+      },
+      "avg_txn_value_scaled": {
+        "p_value": 1.6181025759733202e-19,
+        "direction": "lower",
+        "magnitude": 5.263157894736845,
+        "cluster_mean": -1.0391816925862607,
+        "overall_mean": 0.2437586686313449
+      },
+      "avg_txn_value": {
+        "p_value": 1.618102575973343e-19,
+        "direction": "lower",
+        "magnitude": 0.9484645448081841,
+        "cluster_mean": 0.3396516378069302,
+        "overall_mean": 6.590640104812114
+      }
+    },
+    "specialized_traits": {
+      "nft_activity": {
+        "score": 0.23292367975777006,
+        "percentile": 0.0
+      },
+      "defi_activity": {
+        "score": -0.8672372973957384,
+        "percentile": 0.0
+      },
+      "transaction_volume": {
+        "score": -0.4583580517283359,
+        "percentile": 0.0
+      },
+      "transaction_value": {
+        "score": -0.9514191731102879,
+        "percentile": 0.0
+      },
+      "diversity": {
+        "score": -0.07791554497808642,
+        "percentile": 0.0
+      },
+      "efficiency": {
+        "score": 0.0,
+        "percentile": 0.0
+      },
+      "holding_behavior": {
+        "score": 0.20993696722207253,
+        "percentile": 0.0
+      },
+      "recency": {
+        "score": 0.17098189289347443,
+        "percentile": 0.0
+      }
+    },
+    "key_metrics": {
+      "txn_per_day": 0.2153808048339043,
+      "token_count": 42.26315789473684,
+      "nft_count": 0.0,
+      "nft_ratio": 0.0,
+      "defi_interaction_count": 1.894736842105263,
+      "unique_contracts": 0.0,
+      "unique_counterparties": 10.157894736842104,
+      "avg_txn_value": 0.3396516378069302,
+      "gas_to_value_ratio": 0.0
+    },
+    "user_traits": {
+      "defi_focus": 0.1894736842105263,
+      "nft_focus": 0.0,
+      "short_term_trader": 0.02153808048339043,
+      "long_term_holder": 0.38276953561328764,
+      "risk_taking": 0.0,
+      "security_focused": 1.0,
+      "community_builder": 0.2031578947368421,
+      "independent_actor": 0.8374736842105264,
+      "defi_trader_risk": 0.08225089782922765,
+      "nft_holder_community": 0.17577822910503893,
+      "defi_holder_security": 0.4906203343681968,
+      "nft_trader_risk": 0.006461424145017129,
+      "defi_holder_community": 0.25156770278924945,
+      "nft_holder_independent": 0.36607296594714417,
+      "defi_trader_independent": 0.3334930030923855,
+      "nft_trader_community": 0.06740879256606976
+    }
+  },
+  "cluster_4": {
+    "size": 19,
+    "percentage": 19.0,
+    "significant_features": {
+      "total_value_log_scaled": {
+        "p_value": 1.236959421780532e-21,
+        "direction": "higher",
+        "magnitude": -5.263157894736841,
+        "cluster_mean": 1.1473881490645932,
+        "overall_mean": -0.26914043002749727
+      },
+      "total_value_log": {
+        "p_value": 1.2369594217805405e-21,
+        "direction": "higher",
+        "magnitude": 0.49379818355571853,
+        "cluster_mean": 6.802204801608187,
+        "overall_mean": 4.553630387618198
+      },
+      "total_token_value_usd_log": {
+        "p_value": 1.1303303641844745e-13,
+        "direction": "lower",
+        "magnitude": 1.35532047711334e-16,
+        "cluster_mean": 9.999500033330834e-05,
+        "overall_mean": 9.999500033330835e-05
+      },
+      "max_txn_value": {
+        "p_value": 2.8993667980876923e-13,
+        "direction": "higher",
+        "magnitude": 0.5818957231294287,
+        "cluster_mean": 94.12355489473684,
+        "overall_mean": 59.500480037037036
+      },
+      "value_range": {
+        "p_value": 2.8993667980876923e-13,
+        "direction": "higher",
+        "magnitude": 0.5818957231294287,
+        "cluster_mean": 94.12355489473684,
+        "overall_mean": 59.500480037037036
+      },
+      "max_txn_value_scaled": {
+        "p_value": 2.899366798087713e-13,
+        "direction": "higher",
+        "magnitude": -5.26315789473684,
+        "cluster_mean": 0.8199431126729032,
+        "overall_mean": -0.19233233507142183
+      },
+      "value_range_scaled": {
+        "p_value": 2.899366798087713e-13,
+        "direction": "higher",
+        "magnitude": -5.26315789473684,
+        "cluster_mean": 0.8199431126729032,
+        "overall_mean": -0.19233233507142183
+      },
+      "avg_txn_value_log": {
+        "p_value": 3.546136164984315e-13,
+        "direction": "higher",
+        "magnitude": 0.7166991588082582,
+        "cluster_mean": 2.2647602459034597,
+        "overall_mean": 1.3192528430407506
+      },
+      "avg_txn_value_log_scaled": {
+        "p_value": 3.546136164984378e-13,
+        "direction": "higher",
+        "magnitude": -5.263157894736841,
+        "cluster_mean": 0.8467661749694435,
+        "overall_mean": -0.19862416449900536
+      },
+      "total_txn_count_log": {
+        "p_value": 2.035034661971599e-12,
+        "direction": "higher",
+        "magnitude": 0.1895540979100335,
+        "cluster_mean": 4.658458466523214,
+        "overall_mean": 3.916138387239229
+      }
+    },
+    "specialized_traits": {
+      "nft_activity": {
+        "score": -0.21607555233860679,
+        "percentile": 0.0
+      },
+      "defi_activity": {
+        "score": 4.217596229379419,
+        "percentile": 0.2
+      },
+      "transaction_volume": {
+        "score": 1.120782823490357,
+        "percentile": 0.0
+      },
+      "transaction_value": {
+        "score": 2.467011962081073,
+        "percentile": 0.0
+      },
+      "diversity": {
+        "score": 0.19870505107368472,
+        "percentile": 0.0
+      },
+      "efficiency": {
+        "score": 0.0,
+        "percentile": 0.0
+      },
+      "holding_behavior": {
+        "score": 0.002740600591609299,
+        "percentile": 0.0
+      },
+      "recency": {
+        "score": -0.8988649874896095,
+        "percentile": 0.0
+      }
+    },
+    "key_metrics": {
+      "txn_per_day": 1.126689083148457,
+      "token_count": 55.94736842105263,
+      "nft_count": 0.0,
+      "nft_ratio": 0.0,
+      "defi_interaction_count": 34.526315789473685,
+      "unique_contracts": 0.0,
+      "unique_counterparties": 14.263157894736842,
+      "avg_txn_value": 8.826446551659641,
+      "gas_to_value_ratio": 0.0
+    },
+    "user_traits": {
+      "defi_focus": 0.52,
+      "nft_focus": 0.0,
+      "short_term_trader": 0.1126689083148457,
+      "long_term_holder": 0.30986487334812346,
+      "risk_taking": 0.0,
+      "security_focused": 1.0,
+      "community_builder": 0.28526315789473683,
+      "independent_actor": 0.7717894736842106,
+      "defi_trader_risk": 0.24180067249445372,
+      "nft_holder_community": 0.1785384093728581,
+      "defi_holder_security": 0.6009594620044371,
+      "nft_trader_risk": 0.03380067249445371,
+      "defi_holder_community": 0.3865384093728581,
+      "nft_holder_independent": 0.3244963041097002,
+      "defi_trader_independent": 0.47333751459971685,
+      "nft_trader_community": 0.11937961986287476
+    }
+  }
+}

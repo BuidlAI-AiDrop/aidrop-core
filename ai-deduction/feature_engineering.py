@@ -5,7 +5,12 @@
 import pandas as pd
 import numpy as np
 from typing import Dict, List, Any, Optional
-from .utils import setup_logger
+import sys
+import os
+
+# 상대 경로 임포트를 절대 경로 임포트로 변경
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from utils import setup_logger
 
 logger = setup_logger(__name__)
 

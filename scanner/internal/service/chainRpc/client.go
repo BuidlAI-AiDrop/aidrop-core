@@ -58,7 +58,15 @@ func (c *Client) GetFromAddress(hash common.Hash) (common.Address, error) {
 		return common.Address{}, err
 	}
 
-	signer := types.LatestSignerForChainID(tx.ChainId())
+	// ChainId가 nil이거나 값이 0인 경우 revert된 트랜잭션으로 간주하고 처리
+	var signer types.Signer
+	if tx.ChainId() == nil || tx.ChainId().Cmp(big.NewInt(0)) == 0 {
+		// 네트워크 ID를 사용하여 서명자 생성
+		signer = types.LatestSignerForChainID(c.networkID)
+	} else {
+		signer = types.LatestSignerForChainID(tx.ChainId())
+	}
+
 	return types.Sender(signer, tx)
 }
 
@@ -71,9 +79,9 @@ func (c *Client) GetLatestBlockNumber() (int64, error) {
 }
 
 func (c *Client) GetLogs(filterQuery ethereum.FilterQuery) ([]types.Log, error) {
-	if len(filterQuery.Addresses) == 0 {
-		return nil, nil
-	}
+	// if len(filterQuery.Addresses) == 0 {
+	// 	return nil, nil
+	// }
 
 	var err error
 	var logs []types.Log

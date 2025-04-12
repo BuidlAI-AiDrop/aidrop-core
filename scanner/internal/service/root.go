@@ -3,7 +3,6 @@ package service
 import (
 	"path"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/rrabit42/aidrop-core/common/lib/log"
 	"github.com/rrabit42/aidrop-core/common/util"
@@ -42,9 +41,9 @@ func NewService(cfg *config.Config) {
 	out := make(chan []types.Log, cfg.Chain.ReadingUnit)
 	go s.writer.Run(out) // 데이터 처리를 위한 채널 리스닝
 
-	for _, contract := range cfg.Chain.Contracts {
-		global.GlobalVariable.AddFilterAddresses(common.HexToAddress(contract))
-	}
+	// for _, contract := range cfg.Chain.Contracts {
+	// 	global.GlobalVariable.AddFilterAddresses(common.HexToAddress(contract))
+	// }
 
 	for _, t := range Topics {
 		global.GlobalVariable.AddFilterTopics(t)

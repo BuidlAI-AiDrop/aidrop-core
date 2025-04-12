@@ -1,7 +1,314 @@
 # aidrop-core
 
-
 # On-Chain User Classification MVP
+
+## Overview
+
+This project is a web-based MVP platform that analyzes EVM blockchain user data using AI. The system connects to a selected EVM-compatible blockchain, collects on-chain data for user addresses, applies trained machine learning models to classify/profile users, and presents the results through a web interface.
+
+## Key Features
+
+- **Blockchain Data Ingestion**: Connect to EVM chains and retrieve on-chain data like transaction history, token holdings, and contract interaction records for wallet addresses
+- **Data Processing & Storage**: Parse and normalize raw on-chain data, extract key metrics and features
+- **AI Learning & Training**: Construct labeled dataset of addresses with known classifications and train AI/ML models
+- **Dual Learning Approach**: Implement both unsupervised (clustering) and supervised (classification) learning
+- **User Personality Typing**: Classify users into 16+ distinct types based on four behavioral axes
+- **Web Interface**: Web application where users can input wallet addresses and view AI analysis results
+
+## System Architecture
+
+```mermaid
+flowchart TB
+    %% Data Layer
+    subgraph DataLayer["Data Sources"]
+        direction LR
+        Blockchain["Blockchain Node/API"]
+        LabelData["Labeled Dataset"]
+    end
+    
+    %% Backend Layer
+    subgraph BackendLayer["Backend Services"]
+        direction LR
+        subgraph DataModule["Data Collection & Processing"]
+            Collector["Data Collector"]
+            Processor["Data Processor"]
+            FeatureEng["Feature Engineering"]
+            DB[(Database)]
+        end
+        
+        subgraph AIModule["AI Module"]
+            UnsupModel["Unsupervised Models
+            (K-Means, DBSCAN, GMM)"]
+            SupModel["Supervised Models
+            (Random Forest)"]
+            Integration["Integration Pipeline"]
+        end
+        
+        API["API Gateway"]
+    end
+    
+    %% Frontend Layer
+    subgraph FrontendLayer["Frontend"]
+        WebUI["Web UI"]
+        Dashboard["Analytics Dashboard"]
+        Visualization["Visualizations"]
+    end
+    
+    %% Model Training Environment
+    subgraph TrainingEnv["Training Environment"]
+        Trainer["Model Trainer"]
+        ModelEval["Model Evaluation"]
+        TrainedModels["Model Repository"]
+    end
+    
+    %% Connections
+    Blockchain -->|"Transaction Data"| Collector
+    LabelData -->|"Training Labels"| Trainer
+    
+    Collector -->|"Raw Data"| Processor
+    Processor -->|"Processed Data"| DB
+    Processor -->|"Extracted Features"| FeatureEng
+    DB <-->|"Store/Retrieve"| FeatureEng
+    
+    FeatureEng -->|"Feature Vectors"| UnsupModel
+    FeatureEng -->|"Feature Vectors"| SupModel
+    FeatureEng -->|"Training Data"| Trainer
+    
+    UnsupModel -->|"Clustering Results"| Integration
+    SupModel -->|"Classifications"| Integration
+    Integration -->|"Analysis Results"| API
+    
+    Trainer -->|"Train & Update"| UnsupModel
+    Trainer -->|"Train & Update"| SupModel
+    Trainer -->|"Trained Models"| ModelEval
+    ModelEval -->|"Validated Models"| TrainedModels
+    TrainedModels -->|"Load Models"| AIModule
+    
+    API -->|"JSON Response"| WebUI
+    API -->|"Data for Charts"| Dashboard
+    API -->|"Visualization Data"| Visualization
+    
+    WebUI -.->|"User Input"| API
+    
+    classDef mainFlow fill:#f96,stroke:#333,stroke-width:2px;
+    classDef dataStore fill:#69f,stroke:#333,stroke-width:2px;
+    classDef userInterface fill:#6a6,stroke:#333,stroke-width:2px;
+    
+    class Blockchain,Collector,Processor,FeatureEng,UnsupModel,SupModel,Integration,API mainFlow;
+    class DB,TrainedModels,LabelData dataStore;
+    class WebUI,Dashboard,Visualization userInterface;
+```
+
+## AI Pipeline Flow
+
+```mermaid
+flowchart TB
+    %% Main Data Flow
+    RawData["Raw Blockchain Data"] -->|"Collection"| DataPrep["Data Preparation"]
+    DataPrep -->|"Cleaning & Normalization"| FeatureExt["Feature Extraction"]
+    
+    %% Feature Engineering Branch
+    FeatureExt --> TxMetrics["Transaction Metrics
+    (frequency, amount, gas)"]
+    FeatureExt --> TimePatterns["Temporal Patterns
+    (intervals, timing)"]
+    FeatureExt --> ContractInteract["Contract Interactions
+    (DeFi, NFT, etc)"]
+    FeatureExt --> TokenHoldings["Token Holdings
+    (diversity, balance)"]
+    FeatureExt --> NetworkMetrics["Network Metrics
+    (counterparties, in/out ratio)"]
+    
+    %% Feature Consolidation
+    TxMetrics & TimePatterns & ContractInteract & TokenHoldings & NetworkMetrics -->|"Feature Vector"| FeatureVector["Consolidated Feature Vector"]
+    
+    %% Dual Learning Paths
+    FeatureVector --> UnsupervisedPath["Unsupervised Learning"]
+    FeatureVector --> SupervisedPath["Supervised Learning"]
+    
+    %% Unsupervised Path Details
+    UnsupervisedPath --> ClusterAlgo["Clustering Algorithms"]
+    ClusterAlgo --> KMeans["K-Means"]
+    ClusterAlgo --> DBSCAN["DBSCAN"]
+    ClusterAlgo --> HCluster["Hierarchical"]
+    ClusterAlgo --> GMM["Gaussian Mixture"]
+    
+    KMeans & DBSCAN & HCluster & GMM -->|"Cluster Assignments"| ClusterResults["Cluster Results"]
+    ClusterResults --> Visualization["t-SNE Visualization"]
+    ClusterResults --> ClusterAnalysis["Cluster Analysis
+    (profiles, importance)"]
+    
+    %% Supervised Path Details
+    SupervisedPath -->|"80% Data"| TrainModel["Model Training"]
+    SupervisedPath -->|"20% Data"| TestModel["Model Testing"]
+    
+    TrainModel --> RFModel["Random Forest Classifier"]
+    RFModel --> TestModel
+    TestModel --> ModelEval["Model Evaluation
+    (Accuracy, Confusion Matrix)"]
+    ModelEval --> FeatureImp["Feature Importance"]
+    
+    %% Integration
+    ClusterAnalysis & ModelEval --> Integration["Results Integration"]
+    Integration --> UserProfiles["User Type Profiles"]
+    Integration --> PredConfidence["Prediction Confidence"]
+    Integration --> CrossValidation["Cross-Validation"]
+    Integration --> Insights["Actionable Insights"]
+    
+    %% Final Output
+    UserProfiles & PredConfidence & CrossValidation & Insights --> FinalOutput["Final Analysis Report"]
+    FinalOutput --> Storage["Structured Storage"]
+    FinalOutput --> WebDisplay["Web Interface Display"]
+    
+    %% Styling
+    classDef dataFlow fill:#f96,stroke:#333,stroke-width:2px;
+    classDef algorithms fill:#bbf,stroke:#333,stroke-width:2px;
+    classDef results fill:#6a6,stroke:#333,stroke-width:2px;
+    classDef features fill:#ff9,stroke:#333,stroke-width:2px;
+    
+    class RawData,DataPrep,FeatureExt,FeatureVector dataFlow;
+    class KMeans,DBSCAN,HCluster,GMM,RFModel algorithms;
+    class ClusterResults,ModelEval,FinalOutput results;
+    class TxMetrics,TimePatterns,ContractInteract,TokenHoldings,NetworkMetrics features;
+```
+
+## Typology System Diagram
+
+```mermaid
+flowchart TB
+    %% Main User Type Classification
+    UserData["User On-Chain Data"] --> AI["AI Analysis"]
+    AI --> Typology["User Typology System"]
+    
+    %% The Four Axes
+    Typology --> Axis1["Primary Focus"]
+    Typology --> Axis2["Transaction Pattern"]
+    Typology --> Axis3["Risk Preference"]
+    Typology --> Axis4["Community Involvement"]
+    
+    %% Primary Focus Categories
+    Axis1 --> D["D: DeFi
+    (Lending, Trading)"]
+    Axis1 --> N["N: NFT
+    (Collections, Art)"]
+    Axis1 --> G["G: Gaming
+    (GameFi, Metaverse)"]
+    Axis1 --> S["S: Social
+    (Social Tokens, ENS)"]
+    Axis1 --> U["U: Undefined
+    (Mixed Activity)"]
+    
+    %% Transaction Pattern Categories
+    Axis2 --> T["T: Trading
+    (Frequent Transactions)"]
+    Axis2 --> H["H: Holding
+    (Long-term Assets)"]
+    
+    %% Risk Preference Categories
+    Axis3 --> A["A: Aggressive
+    (New Protocols, High Risk)"]
+    Axis3 --> S1["S: Safe
+    (Established Platforms)"]
+    
+    %% Community Involvement
+    Axis4 --> C["C: Community
+    (DAOs, Governance)"]
+    Axis4 --> I["I: Individual
+    (Personal Usage)"]
+    
+    %% Example Types
+    D & T & A & C --> DTAC["D-T-A-C: Aggressive
+    DeFi Trader in DAOs"]
+    
+    N & H & S1 & I --> NHSI["N-H-S-I: Conservative
+    NFT Collector"]
+    
+    G & T & A & I --> GTAI["G-T-A-I: Aggressive
+    GameFi Player"]
+    
+    %% Type Distribution
+    DTAC & NHSI & GTAI --> TypeDistribution["Type Distribution Analysis"]
+    TypeDistribution --> PopulationInsights["Population Insights"]
+    TypeDistribution --> BehavioralTrends["Behavioral Trends"]
+    
+    %% Styling
+    classDef axis fill:#f96,stroke:#333,stroke-width:2px;
+    classDef category fill:#bbf,stroke:#333,stroke-width:2px;
+    classDef type fill:#6a6,stroke:#333,stroke-width:2px;
+    classDef insight fill:#ff9,stroke:#333,stroke-width:2px;
+    
+    class Axis1,Axis2,Axis3,Axis4 axis;
+    class D,N,G,S,U,T,H,A,S1,C,I category;
+    class DTAC,NHSI,GTAI type;
+    class TypeDistribution,PopulationInsights,BehavioralTrends insight;
+```
+
+## Technical Details
+
+### AI Components
+
+1. **Feature Engineering**
+   - **Transaction Metrics**: Frequency, average amount, gas usage, etc.
+   - **Temporal Patterns**: Transaction intervals, activity time distribution
+   - **Contract Interactions**: Types of contracts, interaction frequencies
+   - **Token Holdings**: Diversity of tokens, balance distributions
+   - **Network Metrics**: Unique counterparties, in/out transaction ratios
+
+2. **Unsupervised Learning (ai-clusturing)**
+   - **Algorithms**: K-Means, DBSCAN, Hierarchical Clustering, Gaussian Mixture Models
+   - **Dimensionality Reduction**: t-SNE for visualization
+   - **Cluster Analysis**: Feature importance per cluster, inter-cluster distance
+   - **Silhouette Analysis**: Optimal cluster number determination
+   - **Visualization**: 2D representation of user clusters with profiles
+
+3. **Supervised Learning (ai-deduction)**
+   - **Algorithm**: Random Forest Classifier
+   - **Training Process**: 80/20 train-test split with cross-validation
+   - **Model Evaluation**: Accuracy (75-80%), confusion matrix, classification report
+   - **Feature Importance**: Ranked contribution of each feature to classification
+   - **Model Persistence**: Saved models for future inference
+
+4. **User Typology System**
+   - **Four Behavioral Axes**:
+     - Primary Focus (D: DeFi / N: NFT / G: Gaming / S: Social / U: Undefined)
+     - Transaction Pattern (T: Trading / H: Holding)
+     - Risk Preference (A: Aggressive / S: Safe)
+     - Community Involvement (C: Community / I: Individual)
+   - **16+ Personality Types**: Combinations of these axes (e.g., D-T-S-C, N-H-A-I)
+   - **Distribution Analysis**: Population distribution across types
+
+5. **Integration Pipeline (ai-pipeline)**
+   - Combines clustering and classification results
+   - Cross-validates findings between supervised and unsupervised approaches
+   - Generates comprehensive user profiles with prediction confidence
+   - Stores analysis results and visualizations in structured format
+
+### Tech Stack
+
+- **Languages**: Python 3.9+
+- **AI/ML Libraries**: scikit-learn, pandas, numpy, matplotlib, seaborn
+- **Data Processing**: JSON serialization with NumPy type handling
+- **Visualization**: matplotlib, t-SNE, confusion matrix plots
+- **Storage**: File-based storage with version control
+
+## Implementation Timeline
+
+1. Data collection system development
+2. Small dataset labeling and basic model training
+3. Model integration into backend API
+4. Frontend development and UX improvement
+
+## Future Extensions
+
+- Support for additional EVM chains
+- Classification of more user categories
+- Enhanced unsupervised learning clustering
+- Graph neural network implementation
+- Real-time transaction monitoring for behavioral changes
+
+---
+
+# 온체인 사용자 분류 MVP
 
 ## 개요
 
@@ -11,42 +318,93 @@
 
 - **블록체인 데이터 수집**: EVM 체인에 연결하여 지갑 주소의 트랜잭션 기록, 토큰 보유량, 컨트랙트 상호작용 기록 등 온체인 데이터 검색
 - **데이터 처리 및 저장**: 원시 온체인 데이터 파싱 및 정규화, 주요 지표 및 특성 추출
-- **학습 데이터셋 및 훈련**: 알려진 분류가 있는 주소 데이터셋 구성 및 AI/ML 모델 훈련
-- **AI 모델 추론**: 훈련된 모델을 백엔드 서비스에 통합, 새로운 지갑 주소 분석
+- **AI 학습 및 훈련**: 알려진 분류가 있는 주소 데이터셋 구성 및 AI/ML 모델 훈련
+- **이중 학습 접근법**: 비지도 학습(클러스터링)과 지도 학습(분류) 모두 구현
+- **사용자 성격 유형 분류**: 4가지 행동 축을 기반으로 16개 이상의 고유한 유형으로 사용자 분류
 - **웹 인터페이스**: 사용자가 지갑 주소를 입력하고 AI 분석 결과를 볼 수 있는 웹 애플리케이션
 
 ## 시스템 아키텍처
 
 ```mermaid
 flowchart TB
-    subgraph 데이터_소스
-        A[블록체인 노드/API]
+    %% Data Layer
+    subgraph DataLayer["Data Sources"]
+        direction LR
+        Blockchain["Blockchain Node/API"]
+        LabelData["Labeled Dataset"]
     end
     
-    subgraph 백엔드
-        B[데이터 수집기 모듈]
-        C[데이터 저장 & 처리]
-        D[모델 추론 서비스]
+    %% Backend Layer
+    subgraph BackendLayer["Backend Services"]
+        direction LR
+        subgraph DataModule["Data Collection & Processing"]
+            Collector["Data Collector"]
+            Processor["Data Processor"]
+            FeatureEng["Feature Engineering"]
+            DB[(Database)]
+        end
+        
+        subgraph AIModule["AI Module"]
+            UnsupModel["Unsupervised Models
+            (K-Means, DBSCAN, GMM)"]
+            SupModel["Supervised Models
+            (Random Forest)"]
+            Integration["Integration Pipeline"]
+        end
+        
+        API["API Gateway"]
     end
     
-    subgraph 모델_훈련
-        E[모델 훈련 환경]
-        F[(학습 데이터)]
-        G[훈련된 모델]
+    %% Frontend Layer
+    subgraph FrontendLayer["Frontend"]
+        WebUI["Web UI"]
+        Dashboard["Analytics Dashboard"]
+        Visualization["Visualizations"]
     end
     
-    subgraph 프론트엔드
-        H[웹 UI]
+    %% Model Training Environment
+    subgraph TrainingEnv["Training Environment"]
+        Trainer["Model Trainer"]
+        ModelEval["Model Evaluation"]
+        TrainedModels["Model Repository"]
     end
     
-    A -->|데이터 요청/응답| B
-    B -->|저장| C
-    C -->|특성 추출| D
-    F -->|데이터 제공| E
-    E -->|모델 생성| G
-    G -->|모델 로드| D
-    D -->|API 응답| H
-    H -->|API 요청| D
+    %% Connections
+    Blockchain -->|"Transaction Data"| Collector
+    LabelData -->|"Training Labels"| Trainer
+    
+    Collector -->|"Raw Data"| Processor
+    Processor -->|"Processed Data"| DB
+    Processor -->|"Extracted Features"| FeatureEng
+    DB <-->|"Store/Retrieve"| FeatureEng
+    
+    FeatureEng -->|"Feature Vectors"| UnsupModel
+    FeatureEng -->|"Feature Vectors"| SupModel
+    FeatureEng -->|"Training Data"| Trainer
+    
+    UnsupModel -->|"Clustering Results"| Integration
+    SupModel -->|"Classifications"| Integration
+    Integration -->|"Analysis Results"| API
+    
+    Trainer -->|"Train & Update"| UnsupModel
+    Trainer -->|"Train & Update"| SupModel
+    Trainer -->|"Trained Models"| ModelEval
+    ModelEval -->|"Validated Models"| TrainedModels
+    TrainedModels -->|"Load Models"| AIModule
+    
+    API -->|"JSON Response"| WebUI
+    API -->|"Data for Charts"| Dashboard
+    API -->|"Visualization Data"| Visualization
+    
+    WebUI -.->|"User Input"| API
+    
+    classDef mainFlow fill:#f96,stroke:#333,stroke-width:2px;
+    classDef dataStore fill:#69f,stroke:#333,stroke-width:2px;
+    classDef userInterface fill:#6a6,stroke:#333,stroke-width:2px;
+    
+    class Blockchain,Collector,Processor,FeatureEng,UnsupModel,SupModel,Integration,API mainFlow;
+    class DB,TrainedModels,LabelData dataStore;
+    class WebUI,Dashboard,Visualization userInterface;
 ```
 
 ## AI 파이프라인 흐름도
@@ -64,54 +422,53 @@ flowchart TB
 └────────────────┘    └────────────────┘    └─────────────────┘
 ```
 
-## 기술 스택
+## 기술적 세부사항
 
-### 백엔드
-- **언어**: Python (web3.py, Flask/FastAPI, pandas, scikit-learn, XGBoost)
-- **데이터베이스**: SQLite/PostgreSQL
-- **API**: Etherscan, Covalent, JSON-RPC
+### AI 구성요소
 
-### 프론트엔드
-- **프레임워크**: React.js
-- **UI 라이브러리**: Bootstrap/Material UI
-- **차트**: Chart.js/D3.js (선택적)
+1. **특성 공학**
+   - **트랜잭션 지표**: 빈도, 평균 금액, 가스 사용량 등
+   - **시간적 패턴**: 트랜잭션 간격, 활동 시간 분포
+   - **컨트랙트 상호작용**: 계약 유형, 상호작용 빈도
+   - **토큰 보유량**: 토큰 다양성, 잔액 분포
+   - **네트워크 지표**: 고유 거래 상대방, 입출금 트랜잭션 비율
 
-## EVM 체인 선택
+2. **비지도 학습 (ai-clusturing)**
+   - **알고리즘**: K-평균, DBSCAN, 계층적 클러스터링, 가우시안 혼합 모델
+   - **차원 축소**: t-SNE를 통한 시각화
+   - **클러스터 분석**: 클러스터별 특성 중요도, 클러스터 간 거리
+   - **실루엣 분석**: 최적 클러스터 수 결정
+   - **시각화**: 사용자 클러스터의 2D 표현과 프로필
 
-MVP를 위해 Ethereum 메인넷이 권장됩니다. 그 이유:
-- 가장 다양한 사용자 활동 (DeFi, NFT, 게임, 거래소)
-- 개발자 도구 및 데이터 소스 지원 우수
-- 분류를 위한 라벨링 데이터 접근성이 높음
+3. **지도 학습 (ai-deduction)**
+   - **알고리즘**: 랜덤 포레스트 분류기
+   - **훈련 과정**: 교차 검증이 포함된 80/20 훈련-테스트 분할
+   - **모델 평가**: 정확도(75-80%), 혼동 행렬, 분류 보고서
+   - **특성 중요도**: 분류에 대한 각 특성의 기여도 순위
+   - **모델 지속성**: 향후 추론을 위한 저장된 모델
 
-## 데이터 라벨링 전략
+4. **사용자 유형 시스템**
+   - **4가지 행동 축**:
+     - 주요 활동 분야 (D: DeFi / N: NFT / G: 게임 / S: 소셜 / U: 미정의)
+     - 거래 패턴 (T: 트레이딩 / H: 홀딩)
+     - 위험 선호도 (A: 공격적 / S: 안전)
+     - 커뮤니티 참여 (C: 커뮤니티 / I: 개인)
+   - **16개 이상의 성격 유형**: 이러한 축의 조합(예: D-T-S-C, N-H-A-I)
+   - **분포 분석**: 유형별 인구 분포
 
-- 오픈 데이터셋 및 연구 활용
-- 휴리스틱 라벨링 규칙 생성
-- 알려진 엔티티 태그 활용
-- 수동 라벨링 (프로토타입용)
+5. **통합 파이프라인 (ai-pipeline)**
+   - 클러스터링 및 분류 결과 결합
+   - 지도 및 비지도 접근법 간의 결과 교차 검증
+   - 예측 신뢰도가 포함된 종합적인 사용자 프로필 생성
+   - 구조화된 형식으로 분석 결과 및 시각화 저장
 
-## AI 모델 파이프라인
+### 기술 스택
 
-### 특성 공학 및 전처리
-- 활동 지표 (트랜잭션 수, 빈도)
-- 트랜잭션 특성 (평균 값, 가스비)
-- 상대방 분석
-- 스마트 컨트랙트 상호작용
-- 토큰 보유량
-- 계정 나이 및 수명
-- 트랜잭션 패턴
-
-### 모델 아키텍처
-- 트리 기반 모델 (Random Forest/XGBoost)
-- 훈련 데이터 80%, 테스트 데이터 20% 분할
-- 교차 검증 사용
-
-## 웹 앱 상호작용
-
-1. 사용자가 지갑 주소 입력
-2. 백엔드가 데이터 수집 및 처리
-3. AI 모델이 분류 수행
-4. 결과 및 지원 정보 표시 (분류 라벨, 신뢰도, 주요 특성)
+- **언어**: Python 3.9+
+- **AI/ML 라이브러리**: scikit-learn, pandas, numpy, matplotlib, seaborn
+- **데이터 처리**: NumPy 타입 처리를 통한 JSON 직렬화
+- **시각화**: matplotlib, t-SNE, 혼동 행렬 플롯
+- **스토리지**: 버전 관리가 포함된 파일 기반 스토리지
 
 ## 구현 타임라인
 
@@ -124,5 +481,6 @@ MVP를 위해 Ethereum 메인넷이 권장됩니다. 그 이유:
 
 - 추가 EVM 체인 지원
 - 더 많은 사용자 카테고리 분류
-- 비지도 학습 클러스터링
+- 향상된 비지도 학습 클러스터링
 - 그래프 신경망 구현
+- 행동 변화를 위한 실시간 트랜잭션 모니터링

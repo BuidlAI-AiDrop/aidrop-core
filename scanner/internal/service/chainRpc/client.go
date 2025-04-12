@@ -4,6 +4,7 @@ import (
 	"context"
 	"math/big"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	client "github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
@@ -39,4 +40,23 @@ func NewClient(url string) *Client {
 
 func (c *Client) GetNetworkID() *big.Int {
 	return c.networkID
+}
+
+func (c *Client) GetBlockTimestamp(blockNumber int64) (int64, error) {
+	if header, err := c.client.HeaderByNumber(context.Background(), big.NewInt(blockNumber)); err != nil {
+		return 0, err
+	} else {
+		return int64(header.Time), nil
+	}
+}
+
+func (c *Client) GetFromAddress(hash common.Hash) (common.Address, error) {
+	var err error
+	var tx *types.Transaction
+	if tx, _, err = c.client.TransactionByHash(context.Background(), hash); err != nil {
+		return common.Address{}, err
+	}
+
+	signer := types.NewEIP155Signer(tx.ChainId())
+	return types.Sender(signer, tx)
 }

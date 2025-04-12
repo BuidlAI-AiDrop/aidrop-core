@@ -8,6 +8,7 @@ import time
 import pandas as pd
 import numpy as np
 from typing import Dict, List, Any, Optional, Tuple
+import logging
 
 # ai-clusturing 모듈 임포트
 from ai_clusturing.feature_extraction import FeatureExtractor as ClusterFeatureExtractor
@@ -50,7 +51,7 @@ class IntegratedAnalysisService:
             version: 모델 버전
             api_key: Etherscan API 키 (선택사항)
         """
-        self.logger = logger
+        self.logger = logging.getLogger(__name__)
         
         # 디렉토리 설정
         self.cluster_model_dir = cluster_model_dir
@@ -59,6 +60,7 @@ class IntegratedAnalysisService:
         self.cache_dir = cache_dir
         self.output_dir = output_dir
         self.version = version
+        self.api_key = api_key or os.environ.get('OPENAI_API_KEY')
         
         # 디렉토리 생성
         os.makedirs(self.cluster_model_dir, exist_ok=True)
@@ -79,7 +81,7 @@ class IntegratedAnalysisService:
         
         # data-process 구성요소
         self.data_collector = BlockchainDataCollector(
-            api_key=api_key, 
+            api_key=self.api_key, 
             data_dir=os.path.join(cache_dir, 'raw')
         )
         self.data_processor = BlockchainDataProcessor(
@@ -93,6 +95,17 @@ class IntegratedAnalysisService:
         
         # 모델 로드
         self.load_models()
+        
+        # 프로필 통합 모듈
+        try:
+            sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            from profile_generator import AIProfileGenerator
+            self.profile_generator = AIProfileGenerator(output_dir=os.path.join(output_dir, 'profiles'))
+            self.logger.info("프로필 생성기 초기화 성공")
+            self.profile_generation_enabled = True
+        except Exception as e:
+            self.logger.warning(f"프로필 생성기 초기화 실패: {e}")
+            self.profile_generation_enabled = False
     
     def load_models(self) -> bool:
         """
@@ -301,6 +314,33 @@ class IntegratedAnalysisService:
             
             # 8. 결과 저장
             result_path = save_results(result, address, self.output_dir)
+            
+            # 9. 프로필 이미지 생성 (활성화된 경우)
+            if self.profile_generation_enabled:
+                try:
+                    self.logger.info(f"프로필 이미지 생성 중: {address}")
+                    image_path = self.profile_generator.generate_profile(
+                        address,
+                        save=True,
+                        show_prompt=False
+                    )
+                    
+                    # 결과에 프로필 이미지 경로 추가
+                    if image_path:
+                        result['profile_image'] = image_path
+                        self.logger.info(f"프로필 이미지 생성 완료: {image_path}")
+                    
+                    # 클러스터 및 특성 정보 출력
+                    self.logger.info(f"[분석 결과] 주소: {address[:8]}...")
+                    self.logger.info(f"클러스터: {result['clustering']['cluster']}")
+                    self.logger.info(f"주요 특성: {', '.join(result['clustering']['primary_traits'])}")
+                    
+                    if 'classification' in result:
+                        self.logger.info(f"분류: {result['classification'].get('user_type', 'unknown')}")
+                        
+                except Exception as e:
+                    self.logger.warning(f"프로필 이미지 생성 실패: {e}")
+            
             self.logger.info(f"통합 분석 완료: {address}, 소요 시간: {result['analysis_time']:.2f}초")
             
             return result

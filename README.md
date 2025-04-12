@@ -13,6 +13,8 @@ This project is a web-based MVP platform that analyzes EVM blockchain user data 
 - **AI Learning & Training**: Construct labeled dataset of addresses with known classifications and train AI/ML models using provided test scripts (`test_data/run_ai_models.py`).
 - **Dual Learning Approach**: Implements both unsupervised (`ai_clusturing`) and supervised (`ai_deduction`) learning.
 - **User Personality Typing**: Classifies users into 16+ distinct types based on four behavioral axes, predicted by the supervised model.
+- **Marketing Targeting**: Extracts target user segments based on on-chain behavior and AI analysis results (`marketing_targeting`).
+- **Marketing Campaign Tracking**: Monitors on-chain activities of targeted user groups and generates performance metrics (`marketing_tracking`).
 - **AI Profile Image Generation**: Generates profile images using OpenAI API based on analysis results (`profile_generator.py`).
 - **API Server**: FastAPI-based server (`ai-api`) providing endpoints for analysis requests and result retrieval, featuring asynchronous background processing.
 - **Cloud Integration**: Uploads generated images and metadata to AWS S3.
@@ -50,6 +52,14 @@ aidrop-core/
 │   ├── docker-compose.yml  # Docker Compose configuration
 │   ├── requirements.txt    # Python dependencies for the API server
 │   └── ...
+├── marketing_targeting/    # Marketing targeting module based on on-chain analysis
+│   ├── __init__.py         # Module initialization
+│   ├── main.py             # CLI interface for target extraction
+│   └── target_extractor.py # Core targeting logic and user extraction
+├── marketing_tracking/     # Marketing effectiveness tracking module
+│   ├── __init__.py         # Module initialization
+│   ├── main.py             # CLI interface for tracking campaigns
+│   └── tracker.py          # Core tracking logic and metrics generation
 ├── profile_generator.py    # AI profile image generation module (uses OpenAI API)
 ├── test_data/              # Test scripts and data
 │   ├── blockchain_test_data.json # Sample on-chain data
@@ -67,6 +77,8 @@ aidrop-core/
 │   ├── requests/           # Stores API request status and final results
 │   │   ├── {request_id}.json # Request status (processing, completed, error)
 │   │   └── {request_id}_result.json # Final result payload
+│   ├── marketing_targets/  # Stores extracted marketing target lists
+│   ├── marketing_tracking/ # Stores marketing campaign data and snapshots
 │   └── visualizations/     # Stores visualizations (clustering, feature importance, etc.)
 ├── batch_analyze.py        # Utility script to send batch analysis requests to the API server
 ├── README.md               # Project documentation (this file)
@@ -291,7 +303,18 @@ flowchart TB
 4.  **User Typology System**:
     -   Defined by the four behavioral axes (Primary Focus, Transaction Pattern, Risk Preference, Community Involvement) derived from `test_data/run_ai_models.py`'s label generation logic.
     -   Aims to classify users into 16+ combined types.
-5.  **Analysis Result Integration & API Service**:
+5.  **Marketing Targeting (`marketing_targeting/`)**:
+    -   **Target Extraction**: `target_extractor.py` identifies valuable user segments based on analysis results.
+    -   **Predefined Segments**: Includes DeFi holders, NFT enthusiasts, community-involved users, and aggressive traders.
+    -   **Custom Filtering**: Supports filtering by MBTI type and cluster ID for precise targeting.
+    -   **CLI Interface**: `main.py` provides command-line tools for target extraction and export.
+6.  **Marketing Tracking (`marketing_tracking/`)**:
+    -   **Campaign Management**: `tracker.py` creates and manages marketing campaigns.
+    -   **Snapshot System**: Creates periodic snapshots of on-chain data for targeted users.
+    -   **Metrics Calculation**: Computes engagement and conversion metrics between snapshots.
+    -   **Reporting**: Generates reports on campaign performance in multiple formats.
+    -   **Monitoring**: Supports continuous monitoring of targeted wallets.
+7.  **Analysis Result Integration & API Service**:
     -   **Result Generation**: `test_data/run_ai_models.py` combines clustering (cluster ID, traits) and classification (predicted label/MBTI) results per address and saves them to `results/analysis/`.
     -   **API Server (`ai-api/app.py`)**: Loads the pre-generated analysis results from `results/analysis/`. Upon request (`/analyze`), it initiates background tasks for image generation (`profile_generator.py`) and S3 uploads, finally providing the metadata URL via the `/api/result` endpoint.
 
@@ -364,6 +387,36 @@ flowchart TB
          -H 'Content-Type: application/json' \
          -d '{"requestId":"YOUR_REQUEST_ID"}'
     ```
+9.  **Marketing Targeting**:
+    -   Extract marketing targets based on analysis results:
+    ```bash
+    python -m marketing_targeting.main --type defi-holders --output results/marketing_targets/defi_holders.json
+    ```
+    -   Available target types: `defi-holders`, `nft-enthusiasts`, `community-users`, `aggressive-traders`, `custom`
+    -   For custom targeting, specify MBTI types: `--mbti D-T-A-C N-H-S-I`
+    -   Optional cluster filtering: `--cluster 0 1 2`
+
+10. **Marketing Tracking**:
+    -   Create a new marketing campaign:
+    ```bash
+    python -m marketing_tracking.main create --name campaign1 --target-file results/marketing_targets/defi_holders.json
+    ```
+    -   Create a snapshot of target addresses:
+    ```bash
+    python -m marketing_tracking.main snapshot --campaign campaign1 --name initial --data-file test_blockchain_data.json
+    ```
+    -   Calculate metrics between snapshots:
+    ```bash
+    python -m marketing_tracking.main metrics --campaign campaign1 --before initial --after final
+    ```
+    -   Generate a performance report:
+    ```bash
+    python -m marketing_tracking.main report --campaign campaign1 --metrics-id metrics_20230101 --format html
+    ```
+    -   Monitor campaign continuously:
+    ```bash
+    python -m marketing_tracking.main monitor --campaign campaign1 --interval 24 --data-source test_blockchain_data.json
+    ```
 
 ## Testing (`ai_pipeline_test`)
 
@@ -387,6 +440,37 @@ The `ai_pipeline_test` directory contains tests for the `ai_pipeline` module.
 - Enhanced unsupervised learning clustering
 - Graph neural network implementation
 - Real-time transaction monitoring for behavioral changes
+
+## Marketing Targeting & Tracking Tools
+
+The following tools can be integrated with the platform for marketing operations:
+
+### Analytics
+- **Google Analytics (GA4)**: Comprehensive user behavior analysis
+- **Mixpanel**: Event-based user interaction tracking
+- **Amplitude**: Product analytics focused on user behavior patterns
+
+### Advertising & Retargeting
+- **Google Ads**: Keyword targeting, remarketing, conversion tracking
+- **Facebook Ads Manager**: Detailed demographic and interest targeting
+- **RTB House**: AI-based personalized retargeting
+
+### CRM & Marketing Automation
+- **HubSpot**: Integrated CRM, email marketing, tracking codes
+- **Salesforce Marketing Cloud**: Multi-channel marketing automation
+- **Marketo**: Lead management and behavior tracking
+
+### Tag Management
+- **Google Tag Manager**: Website tag management and event tracking
+- **Segment**: Data collection and routing to various tools
+
+### User Behavior Analysis
+- **Hotjar**: Heatmaps, recordings, form analysis
+- **FullStory**: User session recording and analysis
+
+### Mobile App Marketing
+- **AppsFlyer**: Mobile app attribution and analytics
+- **Adjust**: Mobile campaign tracking and fraud prevention
 
 ---
 
@@ -429,6 +513,14 @@ aidrop-core/
 │   ├── docker-compose.yml  # Docker Compose 설정
 │   ├── requirements.txt    # API 서버 Python 의존성
 │   └── ...
+├── marketing_targeting/    # 온체인 분석 기반 마케팅 타겟팅 모듈
+│   ├── __init__.py         # 모듈 초기화
+│   ├── main.py             # 타겟 추출 명령줄 인터페이스
+│   └── target_extractor.py # 핵심 타겟팅 로직 및 사용자 추출
+├── marketing_tracking/     # 마케팅 효과 추적 모듈
+│   ├── __init__.py         # 모듈 초기화
+│   ├── main.py             # 캠페인 추적 명령줄 인터페이스
+│   └── tracker.py          # 핵심 추적 로직 및 지표 생성
 ├── profile_generator.py    # AI 프로필 이미지 생성 모듈 (OpenAI API 사용)
 ├── test_data/              # 테스트 관련 스크립트 및 데이터
 │   ├── blockchain_test_data.json # 샘플 온체인 데이터
@@ -446,6 +538,8 @@ aidrop-core/
 │   ├── requests/           # API 요청 상태 및 최종 결과 저장
 │   │   ├── {request_id}.json # 요청 상태
 │   │   └── {request_id}_result.json # 최종 결과
+│   ├── marketing_targets/  # 타겟팅된 마케팅 대상 목록 저장
+│   ├── marketing_tracking/ # 마케팅 캠페인 데이터 및 스냅샷 저장
 │   └── visualizations/     # 클러스터링, 특성 중요도 등 시각화 결과
 ├── batch_analyze.py        # 다수 주소에 대해 API 분석 요청 보내는 스크립트
 ├── README.md               # 프로젝트 문서 (현재 파일)
@@ -465,6 +559,17 @@ aidrop-core/
     -   `model.py`: Random Forest 등 분류 모델 정의, 학습, 평가, 저장, 로드. 사용자 유형 라벨 예측.
     -   `main.py`: 특정 주소의 분류 라벨(MBTI 유형) 예측 (`analyze_address`).
     -   **결과 저장:** `results/deduction_models`, `results/classification_data` 등.
+-   **`marketing_targeting` (마케팅 타겟팅):**
+    -   `target_extractor.py`: 분석 결과를 기반으로 가치 있는 사용자 세그먼트 식별.
+    -   **사전 정의 세그먼트:** DeFi 홀더, NFT 열광자, 커뮤니티 참여 사용자, 공격적 트레이더.
+    -   **맞춤 필터링:** 정밀한 타겟팅을 위한 MBTI 유형 및 클러스터 ID 기반 필터링.
+    -   **명령줄 인터페이스:** `main.py`에서 타겟 추출 및 내보내기를 위한 명령줄 도구 제공.
+-   **`marketing_tracking` (마케팅 추적):**
+    -   `tracker.py`: 마케팅 캠페인 생성 및 관리.
+    -   **스냅샷 시스템:** 타겟 사용자의 온체인 데이터 주기적 스냅샷 생성.
+    -   **지표 계산:** 스냅샷 간 참여율 및 전환율 지표 계산.
+    -   **보고서 생성:** 여러 형식으로 캠페인 성과 보고서 생성.
+    -   **모니터링:** 타겟 지갑의 지속적인 모니터링 지원.
 -   **`ai_pipeline`:**
     -   `pipeline.py`: 전체 분석 흐름 관리 (데이터 처리, 모델 실행, 결과 통합). (API에서 직접 사용 X).
     -   `profile_integration.py`: 분석 결과와 프로필 생성기 연동 로직.
@@ -495,33 +600,40 @@ aidrop-core/
     -   백그라운드: 분석 파일 로드 -> 이미지/메타데이터 생성 및 S3 업로드 -> 결과 파일 생성 (`_result.json`) -> 상태 파일 업데이트 (status="completed" or "error")
 6.  **결과 조회:** `/api/result` 호출 -> 상태 확인 및 결과 반환
 
-## 시스템 아키텍처 (Mermaid 업데이트)
-
-*(기존 다이어그램은 개념적으로 유효)*
-
-## AI 파이프라인 흐름도 (Mermaid 업데이트)
-
-*(기존 다이어그램 참고)*
-
-## 사용자 유형 시스템 (Typology System)
-
-*(기존 설명 및 Mermaid 다이어그램 유지)*
-
 ## 기술적 세부사항
 
 ### AI 구성요소
 
-*(기존 설명에서 모듈명, 주요 파일명 구체화)*
-
-1.  **특성 공학 (`ai_clusturing/feature_extraction.py`, `ai_deduction/feature_engineering.py`)**
-2.  **비지도 학습 (`ai_clusturing/`)**
-3.  **지도 학습 (`ai_deduction/`)**
-4.  **사용자 유형 시스템**
-5.  **분석 결과 통합 및 API 제공 (`test_data/run_ai_models.py`, `ai-api/app.py`, `profile_generator.py`)**
+1.  **특성 공학 (`ai_clusturing/feature_extraction.py`, `ai_deduction/feature_engineering.py`)**:
+    -   온체인 데이터에서 거래 빈도, 금액, 가스 사용량, 시간 패턴, 컨트랙트 상호작용 유형(DeFi, NFT), 토큰 다양성, 네트워크 지표(상대방, in/out 비율) 등의 특성을 추출합니다.
+2.  **비지도 학습 (`ai_clusturing/`)**:
+    -   **알고리즘**: 주로 K-Means(`clustering.py`)를 사용합니다. DBSCAN, GMM 등 다른 알고리즘도 탐색 가능합니다.
+    -   **클러스터 분석**: `cluster_analyzer.py`가 클러스터별 특성 중요도를 결정하고 사람이 읽을 수 있는 프로필을 생성합니다.
+    -   **시각화**: `test_data/run_ai_models.py`가 t-SNE 플롯을 생성하여 `results/visualizations/`에 저장합니다.
+3.  **지도 학습 (`ai_deduction/`)**:
+    -   **알고리즘**: Random Forest Classifier(`model.py`)를 사용합니다.
+    -   **훈련/평가**: `test_data/run_ai_models.py`에서 데이터를 분할(80/20), 정확도 평가, 혼동 행렬 및 분류 보고서 생성(`results/classification_data/`에 저장)을 수행합니다. 특성 중요도도 계산하고 시각화합니다.
+    -   **유형 예측**: 네 가지 행동 축을 기반으로 사용자 유형(예: 'D-T-A-C')을 예측합니다.
+    -   **모델 유지**: 학습된 모델은 `results/deduction_models/`에 저장됩니다.
+4.  **사용자 유형 시스템**:
+    -   `test_data/run_ai_models.py`의 라벨 생성 로직에서 파생된 네 가지 행동 축(주요 관심사, 거래 패턴, 위험 선호도, 커뮤니티 참여)으로 정의됩니다.
+    -   16개 이상의 조합 유형으로 사용자를 분류하는 것을 목표로 합니다.
+5.  **마케팅 타겟팅 (`marketing_targeting/`)**:
+    -   **타겟 추출**: `target_extractor.py`가 분석 결과를 기반으로 가치 있는 사용자 세그먼트를 식별합니다.
+    -   **사전 정의 세그먼트**: DeFi 홀더, NFT 열광자, 커뮤니티 참여 사용자, 공격적 트레이더를 포함합니다.
+    -   **맞춤 필터링**: 정확한 타겟팅을 위해 MBTI 유형 및 클러스터 ID로 필터링을 지원합니다.
+    -   **CLI 인터페이스**: `main.py`는 타겟 추출 및 내보내기를 위한 명령줄 도구를 제공합니다.
+6.  **마케팅 추적 (`marketing_tracking/`)**:
+    -   **캠페인 관리**: `tracker.py`가 마케팅 캠페인을 생성하고 관리합니다.
+    -   **스냅샷 시스템**: 대상 사용자의 온체인 데이터 정기적 스냅샷을 생성합니다.
+    -   **지표 계산**: 스냅샷 간 참여 및 전환 지표를 계산합니다.
+    -   **보고**: 여러 형식으로 캠페인 성과 보고서를 생성합니다.
+    -   **모니터링**: 타겟 지갑의 지속적인 모니터링을 지원합니다.
+7.  **분석 결과 통합 및 API 서비스**:
+    -   **결과 생성**: `test_data/run_ai_models.py`가 클러스터링(클러스터 ID, 특성) 및 분류(예측 라벨/MBTI) 결과를 주소별로 결합하여 `results/analysis/`에 저장합니다.
+    -   **API 서버(`ai-api/app.py`)**: `results/analysis/`에서 사전 생성된 분석 결과를 로드합니다. 요청(`/analyze`)이 있으면 이미지 생성(`profile_generator.py`) 및 S3 업로드를 위한 백그라운드 작업을 시작하고, 최종적으로 `/api/result` 엔드포인트를 통해 메타데이터 URL을 제공합니다.
 
 ### 기술 스택
-
-*(기존 내용 유지, FastAPI 추가)*
 
 -   **언어**: Python 3.9+
 -   **API 프레임워크**: FastAPI
@@ -580,6 +692,36 @@ aidrop-core/
     ```bash
     curl -X POST 'http://localhost:8000/api/result' -H 'Content-Type: application/json' -d '{"requestId":"YOUR_REQUEST_ID"}'
     ```
+9.  **마케팅 타겟팅:**
+    -   분석 결과를 기반으로 마케팅 타겟 추출:
+    ```bash
+    python -m marketing_targeting.main --type defi-holders --output results/marketing_targets/defi_holders.json
+    ```
+    -   사용 가능한 타겟 유형: `defi-holders`, `nft-enthusiasts`, `community-users`, `aggressive-traders`, `custom`
+    -   맞춤 타겟팅 시 MBTI 유형 지정: `--mbti D-T-A-C N-H-S-I`
+    -   선택적 클러스터 필터링: `--cluster 0 1 2`
+
+10. **마케팅 추적:**
+    -   새 마케팅 캠페인 생성:
+    ```bash
+    python -m marketing_tracking.main create --name campaign1 --target-file results/marketing_targets/defi_holders.json
+    ```
+    -   타겟 주소 스냅샷 생성:
+    ```bash
+    python -m marketing_tracking.main snapshot --campaign campaign1 --name initial --data-file test_blockchain_data.json
+    ```
+    -   스냅샷 간 지표 계산:
+    ```bash
+    python -m marketing_tracking.main metrics --campaign campaign1 --before initial --after final
+    ```
+    -   성과 보고서 생성:
+    ```bash
+    python -m marketing_tracking.main report --campaign campaign1 --metrics-id metrics_20230101 --format html
+    ```
+    -   캠페인 지속적 모니터링:
+    ```bash
+    python -m marketing_tracking.main monitor --campaign campaign1 --interval 24 --data-source test_blockchain_data.json
+    ```
 
 ## 테스트 (`ai_pipeline_test`)
 
@@ -598,10 +740,41 @@ aidrop-core/
 
 ## 확장 가능성
 
-*(기존 내용 유지)*
-
 - 추가 EVM 체인 지원
 - 더 많은 사용자 카테고리 분류
 - 향상된 비지도 학습 클러스터링
 - 그래프 신경망 구현
 - 행동 변화를 위한 실시간 트랜잭션 모니터링
+- 고급 마케팅 타겟팅 기능
+- 자동화된 마케팅 캠페인 최적화
+
+## 마케팅 타겟팅 및 트래킹 도구
+
+플랫폼과 통합 가능한 마케팅 운영 도구:
+
+### 분석 도구
+- **Google Analytics (GA4)**: 종합적인 사용자 행동 분석
+- **Mixpanel**: 이벤트 기반 사용자 상호작용 추적
+- **Amplitude**: 사용자 행동 패턴 중심의 제품 분석
+
+### 광고 및 리타겟팅
+- **Google Ads**: 키워드 타겟팅, 리마케팅, 전환 추적
+- **Facebook Ads Manager**: 상세 인구통계 및 관심사 타겟팅
+- **RTB House**: AI 기반 맞춤형 리타겟팅
+
+### CRM 및 마케팅 자동화
+- **HubSpot**: 통합 CRM, 이메일 마케팅, 트래킹 코드
+- **Salesforce Marketing Cloud**: 다중 채널 마케팅 자동화
+- **Marketo**: 리드 관리 및 행동 트래킹
+
+### 태그 관리
+- **Google Tag Manager**: 웹사이트 태그 관리 및 이벤트 트래킹
+- **Segment**: 데이터 수집 및 다양한 툴로 전송
+
+### 사용자 행동 분석
+- **Hotjar**: 히트맵, 녹화, 폼 분석
+- **FullStory**: 사용자 세션 녹화 및 분석
+
+### 모바일 앱 마케팅
+- **AppsFlyer**: 모바일 앱 어트리뷰션 및 분석
+- **Adjust**: 모바일 캠페인 트래킹 및 사기 방지

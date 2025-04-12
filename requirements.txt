@@ -1,6 +1,11 @@
-pandas
-numpy
-matplotlib
-seaborn
-scikit-learn
+boto3==1.26.115
+fastapi==0.95.0
 importlib-metadata
+matplotlib
+numpy
+pandas
+pydantic==1.10.7
+scikit-learn
+seaborn
+supabase==1.0.3
+uvicorn==0.21.1

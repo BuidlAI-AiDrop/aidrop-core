@@ -4,6 +4,7 @@ import (
 	"context"
 	"math/big"
 
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	client "github.com/ethereum/go-ethereum/ethclient"
@@ -59,4 +60,26 @@ func (c *Client) GetFromAddress(hash common.Hash) (common.Address, error) {
 
 	signer := types.NewEIP155Signer(tx.ChainId())
 	return types.Sender(signer, tx)
+}
+
+func (c *Client) GetLatestBlockNumber() (int64, error) {
+	if blockNumber, err := c.client.BlockNumber(context.Background()); err != nil {
+		return 0, err
+	} else {
+		return int64(blockNumber), nil
+	}
+}
+
+func (c *Client) GetLogs(filterQuery ethereum.FilterQuery) ([]types.Log, error) {
+	if len(filterQuery.Addresses) == 0 {
+		return nil, nil
+	}
+
+	var err error
+	var logs []types.Log
+	if logs, err = c.client.FilterLogs(context.Background(), filterQuery); err != nil {
+		return []types.Log{}, err
+	}
+
+	return logs, nil
 }

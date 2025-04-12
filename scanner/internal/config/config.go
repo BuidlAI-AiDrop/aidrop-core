@@ -12,6 +12,7 @@ type Config struct {
 		URL         string
 		Start       int64
 		ReadingUnit int64
+		Contracts   []string
 	}
 
 	Log struct {

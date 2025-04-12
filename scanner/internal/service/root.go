@@ -1,15 +1,18 @@
 package service
 
 import (
-	"go/scanner"
 	"path"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/rrabit42/aidrop-core/common/lib/log"
 	"github.com/rrabit42/aidrop-core/common/util"
+	"github.com/rrabit42/aidrop-core/global"
 	"github.com/rrabit42/aidrop-core/internal/config"
 	"github.com/rrabit42/aidrop-core/internal/service/chainRpc"
+	"github.com/rrabit42/aidrop-core/internal/service/scanner"
 	"github.com/rrabit42/aidrop-core/internal/service/writer"
+	. "github.com/rrabit42/aidrop-core/types"
 )
 
 type Service struct {
@@ -39,4 +42,15 @@ func NewService(cfg *config.Config) {
 	out := make(chan []types.Log, cfg.Chain.ReadingUnit)
 	go s.writer.Run(out) // 데이터 처리를 위한 채널 리스닝
 
+	for _, contract := range cfg.Chain.Contracts {
+		global.GlobalVariable.AddFilterAddresses(common.HexToAddress(contract))
+	}
+
+	for _, t := range Topics {
+		global.GlobalVariable.AddFilterTopics(t)
+	}
+
+	s.scanner = scanner.NewScanner(cfg, s.client, out)
+
+	select {}
 }

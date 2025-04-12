@@ -1,0 +1,18 @@
+{
+  "defi_focus": "DeFi 프로토콜 활동과 금융 거래에 중점을 둔 사용자 (D)",
+  "nft_focus": "NFT 수집과 창작 활동에 중점을 둔 사용자 (N)",
+  "short_term_trader": "단기 거래와 빈번한 트랜잭션을 보이는 사용자 (T)",
+  "long_term_holder": "장기 보유 성향과 낮은 거래 빈도를 보이는 사용자 (H)",
+  "risk_taking": "새로운 프로토콜 사용과 고위험 활동을 선호하는 사용자 (A)",
+  "security_focused": "검증된 프로토콜만 사용하고 안정적인 자산을 선호하는 사용자 (S)",
+  "community_builder": "다양한 DAO 참여와 사회적 상호작용이 많은 사용자 (C)",
+  "independent_actor": "독립적인 활동을 선호하고 상호작용이 제한적인 사용자 (I)",
+  "defi_trader_risk": "DeFi에서 단기 거래와 위험 감수 성향을 보이는 사용자 (D-T-A)",
+  "nft_holder_community": "NFT 장기 보유와 커뮤니티 활동에 중점을 두는 사용자 (N-H-C)",
+  "defi_holder_security": "안정적인 DeFi 프로토콜에 장기 투자하는 사용자 (D-H-S)",
+  "nft_trader_risk": "위험을 감수하며 NFT 거래를 활발히 하는 사용자 (N-T-A)",
+  "defi_holder_community": "DeFi 장기 투자와 DAO 참여가 활발한 사용자 (D-H-C)",
+  "nft_holder_independent": "NFT를 장기 보유하며 독립적으로 활동하는 사용자 (N-H-I)",
+  "defi_trader_independent": "DeFi 단기 거래를 독립적으로 수행하는 사용자 (D-T-I)",
+  "nft_trader_community": "NFT 거래와 커뮤니티 활동이 모두 활발한 사용자 (N-T-C)"
+}

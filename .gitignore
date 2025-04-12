@@ -63,4 +63,8 @@ venv/
 .env/
 
 # Cursor editor files
-.cursor/ 
+.cursor/ results/
+logs/
+
+.env
+.env.example

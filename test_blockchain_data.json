@@ -1,0 +1,200 @@
+{
+  "0x0000": {
+    "txn_count": 78,
+    "token_count": 5,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x0001": {
+    "txn_count": 56,
+    "token_count": 6,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x0002": {
+    "txn_count": 75,
+    "token_count": 4,
+    "is_staking": true,
+    "service_used": false
+  },
+  "0x0003": {
+    "txn_count": 22,
+    "token_count": 3,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x0004": {
+    "txn_count": 50,
+    "token_count": 10,
+    "is_staking": true,
+    "service_used": false
+  },
+  "0x0005": {
+    "txn_count": 51,
+    "token_count": 6,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x0006": {
+    "txn_count": 55,
+    "token_count": 7,
+    "is_staking": true,
+    "service_used": false
+  },
+  "0x0007": {
+    "txn_count": 78,
+    "token_count": 4,
+    "is_staking": true,
+    "service_used": false
+  },
+  "0x0008": {
+    "txn_count": 37,
+    "token_count": 10,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x0009": {
+    "txn_count": 77,
+    "token_count": 5,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x000a": {
+    "txn_count": 87,
+    "token_count": 5,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x000b": {
+    "txn_count": 83,
+    "token_count": 8,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x000c": {
+    "txn_count": 80,
+    "token_count": 3,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x000d": {
+    "txn_count": 12,
+    "token_count": 8,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x000e": {
+    "txn_count": 40,
+    "token_count": 4,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x000f": {
+    "txn_count": 95,
+    "token_count": 7,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x0010": {
+    "txn_count": 24,
+    "token_count": 9,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x0011": {
+    "txn_count": 83,
+    "token_count": 3,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x0012": {
+    "txn_count": 61,
+    "token_count": 7,
+    "is_staking": true,
+    "service_used": false
+  },
+  "0x0013": {
+    "txn_count": 90,
+    "token_count": 4,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x0014": {
+    "txn_count": 79,
+    "token_count": 10,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x0015": {
+    "txn_count": 71,
+    "token_count": 7,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x0016": {
+    "txn_count": 71,
+    "token_count": 8,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x0017": {
+    "txn_count": 85,
+    "token_count": 2,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x0018": {
+    "txn_count": 33,
+    "token_count": 7,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x0019": {
+    "txn_count": 60,
+    "token_count": 2,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x001a": {
+    "txn_count": 83,
+    "token_count": 4,
+    "is_staking": false,
+    "service_used": true
+  },
+  "0x001b": {
+    "txn_count": 28,
+    "token_count": 9,
+    "is_staking": true,
+    "service_used": false
+  },
+  "0x001c": {
+    "txn_count": 89,
+    "token_count": 2,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x001d": {
+    "txn_count": 34,
+    "token_count": 7,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x001e": {
+    "txn_count": 16,
+    "token_count": 9,
+    "is_staking": false,
+    "service_used": false
+  },
+  "0x001f": {
+    "txn_count": 52,
+    "token_count": 2,
+    "is_staking": true,
+    "service_used": false
+  },
+  "0x0020": {
+    "txn_count": 16,
+    "token_count": 8,
+    "is_staking": false,
+    "service_used": false
+  }
+}

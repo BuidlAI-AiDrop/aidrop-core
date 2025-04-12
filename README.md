@@ -328,14 +328,21 @@ flowchart TB
     # Assuming other dependencies like scikit-learn, pandas, etc., are needed
     pip install scikit-learn pandas numpy matplotlib seaborn requests boto3 # Example
     ```
-4.  **Generate Analysis Results**:
+4.  **Generate Test Blockchain Data** (Optional, if sample data doesn't exist):
+    -   You can generate random blockchain data for testing:
+    ```bash
+    python3 -c "import json, random; data = {}; [data.update({f'0x{i:04x}': {'txn_count': random.randint(10, 100), 'token_count': random.randint(1, 10), 'is_staking': random.random() < 0.2, 'service_used': random.random() < 0.1}}) for i in range(33)]; open('test_blockchain_data.json', 'w').write(json.dumps(data, indent=2))"
+    ```
+    -   This creates a JSON file with 33 wallet addresses and random transaction data, including transaction counts, token counts, staking status, and service usage information.
+    -   Alternative: Use the existing sample data in `test_data/blockchain_test_data.json`.
+5.  **Generate Analysis Results**:
     -   Ensure `test_data/blockchain_test_data.json` exists.
     -   Run the script to train models (if needed) and generate per-address analysis files for the API server:
     ```bash
     python test_data/run_ai_models.py
     ```
     -   This creates files in `results/analysis/1/`.
-5.  **Run the API Server**:
+6.  **Run the API Server**:
     -   **Locally**:
         ```bash
         python ai-api/app.py
@@ -345,12 +352,12 @@ flowchart TB
         docker-compose -f ai-api/docker-compose.yml up --build -d
         ```
         (Ensure Docker and Docker Compose are installed).
-6.  **Send Analysis Requests (Batch)**:
+7.  **Send Analysis Requests (Batch)**:
     -   With the API server running, execute the batch script:
     ```bash
     python batch_analyze.py
     ```
-7.  **Retrieve Results**:
+8.  **Retrieve Results**:
     -   Use the `requestId` printed by `batch_analyze.py` to query the `/api/result` endpoint (e.g., using `curl` or Postman).
     ```bash
     curl -X POST 'http://localhost:8000/api/result' \
@@ -546,22 +553,29 @@ aidrop-core/
     pip install -r ai-api/requirements.txt
     pip install scikit-learn pandas numpy matplotlib seaborn requests boto3 # 예시
     ```
-4.  **모델 학습 및 분석 결과 생성:**
+4.  **테스트용 블록체인 데이터 생성** (선택사항, 샘플 데이터가 없는 경우):
+    -   테스트용 랜덤 블록체인 데이터를 생성할 수 있습니다:
+    ```bash
+    python3 -c "import json, random; data = {}; [data.update({f'0x{i:04x}': {'txn_count': random.randint(10, 100), 'token_count': random.randint(1, 10), 'is_staking': random.random() < 0.2, 'service_used': random.random() < 0.1}}) for i in range(33)]; open('test_blockchain_data.json', 'w').write(json.dumps(data, indent=2))"
+    ```
+    -   이 명령어는 33개의 지갑 주소와 트랜잭션 수, 토큰 수, 스테이킹 상태, 서비스 사용 여부 등의 랜덤 데이터가 포함된 JSON 파일을 생성합니다.
+    -   대안: `test_data/blockchain_test_data.json`의 기존 샘플 데이터 사용.
+5.  **모델 학습 및 분석 결과 생성:**
     -   `test_data/blockchain_test_data.json` 파일 확인.
     -   아래 명령어로 모델 학습 및 API 서버용 주소별 분석 결과 생성:
     ```bash
     python test_data/run_ai_models.py
     ```
     -   결과는 `results/analysis/1/` 에 `{address}.json` 으로 저장됩니다.
-5.  **API 서버 실행:**
+6.  **API 서버 실행:**
     -   **로컬:** `python ai-api/app.py`
     -   **Docker Compose (권장):** `docker-compose -f ai-api/docker-compose.yml up --build -d` (Docker 설치 필요)
-6.  **분석 요청 보내기 (배치):**
+7.  **분석 요청 보내기 (배치):**
     -   API 서버 실행 중인 상태에서 실행:
     ```bash
     python batch_analyze.py
     ```
-7.  **결과 조회:**
+8.  **결과 조회:**
     -   `batch_analyze.py` 출력된 `requestId`로 `/api/result` 호출 (예: `curl`):
     ```bash
     curl -X POST 'http://localhost:8000/api/result' -H 'Content-Type: application/json' -d '{"requestId":"YOUR_REQUEST_ID"}'

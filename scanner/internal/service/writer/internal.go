@@ -18,56 +18,63 @@ type variable struct {
 	networkId         *big.Int
 }
 
-func parseEventData(eventType EventType, topics []common.Hash, data []byte) any {
+func parseEventData(eventData EventData, eventType EventType, topics []common.Hash, data []byte) any {
 	switch eventType {
 	case Transfer:
 		return TransferEvent{
-			From:  common.BytesToAddress(topics[1][:]),
-			To:    common.BytesToAddress(topics[2][:]),
-			Value: decimal.NewFromBigInt(new(big.Int).SetBytes(data[:32]), 0),
+			EventData: eventData,
+			From:      common.BytesToAddress(topics[1][:]),
+			To:        common.BytesToAddress(topics[2][:]),
+			Value:     decimal.NewFromBigInt(new(big.Int).SetBytes(data[:32]), 0),
 		}
 
 	case Approval:
 		return ApprovalEvent{
-			Owner:   common.BytesToAddress(topics[1][:]),
-			Spender: common.BytesToAddress(topics[2][:]),
-			Value:   decimal.NewFromBigInt(new(big.Int).SetBytes(data[:32]), 0),
+			EventData: eventData,
+			Owner:     common.BytesToAddress(topics[1][:]),
+			Spender:   common.BytesToAddress(topics[2][:]),
+			Value:     decimal.NewFromBigInt(new(big.Int).SetBytes(data[:32]), 0),
 		}
 
 	case ApprovalForAll:
 		return ApprovalForAllEvent{
-			Owner:    common.BytesToAddress(topics[1][:]),
-			Operator: common.BytesToAddress(topics[2][:]),
-			Approved: new(big.Int).SetBytes(data[:32]).Uint64() == 1,
+			EventData: eventData,
+			Owner:     common.BytesToAddress(topics[1][:]),
+			Operator:  common.BytesToAddress(topics[2][:]),
+			Approved:  new(big.Int).SetBytes(data[:32]).Uint64() == 1,
 		}
 
 	case TransferSingle:
 		return TransferSingleEvent{
-			Operator: common.BytesToAddress(topics[1][:]),
-			From:     common.BytesToAddress(topics[2][:]),
-			To:       common.BytesToAddress(topics[3][:]),
-			Id:       new(big.Int).SetBytes(data[:32]),
-			Value:    new(big.Int).SetBytes(data[32:64]),
+			EventData: eventData,
+			Operator:  common.BytesToAddress(topics[1][:]),
+			From:      common.BytesToAddress(topics[2][:]),
+			To:        common.BytesToAddress(topics[3][:]),
+			Id:        new(big.Int).SetBytes(data[:32]),
+			Value:     new(big.Int).SetBytes(data[32:64]),
 		}
 
 	case TransferBatch:
 		// 복잡한 배열 형태의 데이터는 실제 구현에서 추가 처리 필요
 		// 간소화를 위해 배열은 다루지 않음
 		return TransferBatchEvent{
-			Operator: common.BytesToAddress(topics[1][:]),
-			From:     common.BytesToAddress(topics[2][:]),
-			To:       common.BytesToAddress(topics[3][:]),
+			EventData: eventData,
+			Operator:  common.BytesToAddress(topics[1][:]),
+			From:      common.BytesToAddress(topics[2][:]),
+			To:        common.BytesToAddress(topics[3][:]),
 			// Ids와 Values 배열 파싱은 실제 구현에서 처리
 		}
 
 	case URI:
 		// string 파싱은 실제 구현에서 추가 처리 필요
 		return URIEvent{
-			Id: new(big.Int).SetBytes(data[32:64]),
+			EventData: eventData,
+			Id:        new(big.Int).SetBytes(data[32:64]),
 		}
 
 	case Swap:
 		return SwapEvent{
+			EventData:  eventData,
 			Sender:     common.BytesToAddress(topics[1][:]),
 			Amount0In:  new(big.Int).SetBytes(data[:32]),
 			Amount1In:  new(big.Int).SetBytes(data[32:64]),
@@ -78,6 +85,7 @@ func parseEventData(eventType EventType, topics []common.Hash, data []byte) any 
 
 	case PairCreated:
 		return PairCreatedEvent{
+			EventData: eventData,
 			Token0:    common.BytesToAddress(topics[1][:]),
 			Token1:    common.BytesToAddress(topics[2][:]),
 			Pair:      common.BytesToAddress(data[:32]),
@@ -86,24 +94,28 @@ func parseEventData(eventType EventType, topics []common.Hash, data []byte) any 
 
 	case Sync:
 		return SyncEvent{
-			Reserve0: new(big.Int).SetBytes(data[:32]),
-			Reserve1: new(big.Int).SetBytes(data[32:64]),
+			EventData: eventData,
+			Reserve0:  new(big.Int).SetBytes(data[:32]),
+			Reserve1:  new(big.Int).SetBytes(data[32:64]),
 		}
 
 	case Mint:
 		return MintEvent{
-			To:     common.BytesToAddress(topics[1][:]),
-			Amount: new(big.Int).SetBytes(data[:32]),
+			EventData: eventData,
+			To:        common.BytesToAddress(topics[1][:]),
+			Amount:    new(big.Int).SetBytes(data[:32]),
 		}
 
 	case Burn:
 		return BurnEvent{
-			From:   common.BytesToAddress(topics[1][:]),
-			Amount: new(big.Int).SetBytes(data[:32]),
+			EventData: eventData,
+			From:      common.BytesToAddress(topics[1][:]),
+			Amount:    new(big.Int).SetBytes(data[:32]),
 		}
 
 	case Deposit:
 		return DepositEvent{
+			EventData:    eventData,
 			User:         common.BytesToAddress(topics[1][:]),
 			Reserve:      common.BytesToAddress(topics[2][:]),
 			Amount:       new(big.Int).SetBytes(data[:32]),
@@ -112,13 +124,15 @@ func parseEventData(eventType EventType, topics []common.Hash, data []byte) any 
 
 	case Withdraw:
 		return WithdrawEvent{
-			User:   common.BytesToAddress(topics[1][:]),
-			Amount: new(big.Int).SetBytes(data[:32]),
-			To:     common.BytesToAddress(data[32:64]),
+			EventData: eventData,
+			User:      common.BytesToAddress(topics[1][:]),
+			Amount:    new(big.Int).SetBytes(data[:32]),
+			To:        common.BytesToAddress(data[32:64]),
 		}
 
 	case Borrow:
 		return BorrowEvent{
+			EventData:    eventData,
 			User:         common.BytesToAddress(topics[1][:]),
 			Reserve:      common.BytesToAddress(topics[2][:]),
 			Amount:       new(big.Int).SetBytes(data[:32]),
@@ -129,15 +143,17 @@ func parseEventData(eventType EventType, topics []common.Hash, data []byte) any 
 
 	case Repay:
 		return RepayEvent{
-			User:     common.BytesToAddress(topics[1][:]),
-			Repayer:  common.BytesToAddress(topics[2][:]),
-			Reserve:  common.BytesToAddress(topics[3][:]),
-			Amount:   new(big.Int).SetBytes(data[:32]),
-			Interest: new(big.Int).SetBytes(data[32:64]),
+			EventData: eventData,
+			User:      common.BytesToAddress(topics[1][:]),
+			Repayer:   common.BytesToAddress(topics[2][:]),
+			Reserve:   common.BytesToAddress(topics[3][:]),
+			Amount:    new(big.Int).SetBytes(data[:32]),
+			Interest:  new(big.Int).SetBytes(data[32:64]),
 		}
 
 	case LiquidationCall:
 		return LiquidationCallEvent{
+			EventData:        eventData,
 			Collateral:       common.BytesToAddress(topics[1][:]),
 			DebtAsset:        common.BytesToAddress(topics[2][:]),
 			User:             common.BytesToAddress(topics[3][:]),
@@ -151,6 +167,7 @@ func parseEventData(eventType EventType, topics []common.Hash, data []byte) any 
 		var labelHash [32]byte
 		copy(labelHash[:], topics[1][:])
 		return NameRegisteredEvent{
+			EventData: eventData,
 			LabelHash: labelHash,
 			Owner:     common.BytesToAddress(topics[2][:]),
 			Cost:      new(big.Int).SetBytes(data[:32]),
@@ -160,6 +177,7 @@ func parseEventData(eventType EventType, topics []common.Hash, data []byte) any 
 		var labelHash [32]byte
 		copy(labelHash[:], topics[1][:])
 		return NameRenewedEvent{
+			EventData: eventData,
 			LabelHash: labelHash,
 			Cost:      new(big.Int).SetBytes(data[:32]),
 		}
@@ -168,30 +186,35 @@ func parseEventData(eventType EventType, topics []common.Hash, data []byte) any 
 		var labelHash [32]byte
 		copy(labelHash[:], topics[1][:])
 		return NameTransferredEvent{
+			EventData: eventData,
 			LabelHash: labelHash,
 			Owner:     common.BytesToAddress(topics[2][:]),
 		}
 
 	case Staked:
 		return StakedEvent{
-			User:   common.BytesToAddress(topics[1][:]),
-			Amount: new(big.Int).SetBytes(data[:32]),
+			EventData: eventData,
+			User:      common.BytesToAddress(topics[1][:]),
+			Amount:    new(big.Int).SetBytes(data[:32]),
 		}
 
 	case Unstaked:
 		return UnstakedEvent{
-			User:   common.BytesToAddress(topics[1][:]),
-			Amount: new(big.Int).SetBytes(data[:32]),
+			EventData: eventData,
+			User:      common.BytesToAddress(topics[1][:]),
+			Amount:    new(big.Int).SetBytes(data[:32]),
 		}
 
 	case RewardClaimed:
 		return RewardClaimedEvent{
-			User:   common.BytesToAddress(topics[1][:]),
-			Amount: new(big.Int).SetBytes(data[:32]),
+			EventData: eventData,
+			User:      common.BytesToAddress(topics[1][:]),
+			Amount:    new(big.Int).SetBytes(data[:32]),
 		}
 
 	case VoteCast:
 		return VoteCastEvent{
+			EventData:  eventData,
 			Voter:      common.BytesToAddress(topics[1][:]),
 			ProposalId: new(big.Int).SetBytes(topics[2][:]),
 			Support:    new(big.Int).SetBytes(data[:32]).Uint64() == 1,
@@ -200,6 +223,7 @@ func parseEventData(eventType EventType, topics []common.Hash, data []byte) any 
 
 	case ProposalCreated:
 		return ProposalCreatedEvent{
+			EventData:  eventData,
 			ProposalId: new(big.Int).SetBytes(topics[1][:]),
 			Proposer:   common.BytesToAddress(topics[2][:]),
 			// Description 문자열 파싱은 실제 구현에서 처리
@@ -209,6 +233,7 @@ func parseEventData(eventType EventType, topics []common.Hash, data []byte) any 
 		var orderId [32]byte
 		copy(orderId[:], topics[1][:])
 		return OrderCreatedEvent{
+			EventData: eventData,
 			OrderId:   orderId,
 			Maker:     common.BytesToAddress(topics[2][:]),
 			AssetAddr: common.BytesToAddress(data[:32]),
@@ -220,7 +245,8 @@ func parseEventData(eventType EventType, topics []common.Hash, data []byte) any 
 		var orderId [32]byte
 		copy(orderId[:], topics[1][:])
 		return OrderCancelledEvent{
-			OrderId: orderId,
+			EventData: eventData,
+			OrderId:   orderId,
 		}
 
 	case OrderMatched:
@@ -228,6 +254,7 @@ func parseEventData(eventType EventType, topics []common.Hash, data []byte) any 
 		copy(buyOrderId[:], topics[1][:])
 		copy(sellOrderId[:], topics[2][:])
 		return OrderMatchedEvent{
+			EventData:   eventData,
 			BuyOrderId:  buyOrderId,
 			SellOrderId: sellOrderId,
 			Maker:       common.BytesToAddress(data[:32]),
@@ -238,16 +265,19 @@ func parseEventData(eventType EventType, topics []common.Hash, data []byte) any 
 
 	case Paused:
 		return PausedEvent{
-			Account: common.BytesToAddress(data[:32]),
+			EventData: eventData,
+			Account:   common.BytesToAddress(data[:32]),
 		}
 
 	case Unpaused:
 		return UnpausedEvent{
-			Account: common.BytesToAddress(data[:32]),
+			EventData: eventData,
+			Account:   common.BytesToAddress(data[:32]),
 		}
 
 	case OwnershipTransferred:
 		return OwnershipTransferredEvent{
+			EventData:     eventData,
 			PreviousOwner: common.BytesToAddress(topics[1][:]),
 			NewOwner:      common.BytesToAddress(topics[2][:]),
 		}
@@ -256,18 +286,20 @@ func parseEventData(eventType EventType, topics []common.Hash, data []byte) any 
 		var role [32]byte
 		copy(role[:], topics[1][:])
 		return RoleGrantedEvent{
-			Role:    role,
-			Account: common.BytesToAddress(topics[2][:]),
-			Sender:  common.BytesToAddress(topics[3][:]),
+			EventData: eventData,
+			Role:      role,
+			Account:   common.BytesToAddress(topics[2][:]),
+			Sender:    common.BytesToAddress(topics[3][:]),
 		}
 
 	case RoleRevoked:
 		var role [32]byte
 		copy(role[:], topics[1][:])
 		return RoleRevokedEvent{
-			Role:    role,
-			Account: common.BytesToAddress(topics[2][:]),
-			Sender:  common.BytesToAddress(topics[3][:]),
+			EventData: eventData,
+			Role:      role,
+			Account:   common.BytesToAddress(topics[2][:]),
+			Sender:    common.BytesToAddress(topics[3][:]),
 		}
 
 	default:

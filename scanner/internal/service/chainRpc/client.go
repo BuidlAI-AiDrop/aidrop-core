@@ -58,7 +58,7 @@ func (c *Client) GetFromAddress(hash common.Hash) (common.Address, error) {
 		return common.Address{}, err
 	}
 
-	signer := types.NewEIP155Signer(tx.ChainId())
+	signer := types.LatestSignerForChainID(tx.ChainId())
 	return types.Sender(signer, tx)
 }
 

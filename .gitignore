@@ -1,4 +1,69 @@
-results/
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Go workspace file
+go.work
+
+# Config files
+**/*.toml
+**/*.conf
+**/*.config
+**/*.json.secret
+**/*.key
+**/*.pem
+**/*config*.json
+**/*secrets*.json
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Specifically ignore config files
+scanner/cmd/config.toml
+
+# Dependency directories
+# vendor/
+
+# Go binary files
+bin/
+build/
+
+# Log files
+*.log
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Node modules
+node_modules/
+
+# Python files
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env/
+
+# Cursor editor files
+.cursor/ results/
 logs/
 
 .env

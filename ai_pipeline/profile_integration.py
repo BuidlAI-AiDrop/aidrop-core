@@ -56,14 +56,14 @@ class ProfileIntegration:
         """
         models = {}
         
-        # ai-deduction 분류 모델 확인
+        # ai_deduction 분류 모델 확인
         deduction_model_path = os.path.join(self.models_dir, 'test_model')
         if os.path.exists(deduction_model_path):
             try:
                 # 임포트 모듈
-                if os.path.exists(os.path.join(base_dir, 'ai-deduction', 'model.py')):
+                if os.path.exists(os.path.join(base_dir, 'ai_deduction', 'model.py')):
                     model_module = self._import_module('model', 
-                                    os.path.join(base_dir, 'ai-deduction', 'model.py'))
+                                    os.path.join(base_dir, 'ai_deduction', 'model.py'))
                     
                     # 모델 로드
                     model_class = getattr(model_module, 'UserClassificationModel', None)
@@ -74,14 +74,14 @@ class ProfileIntegration:
             except Exception as e:
                 print(f"분류 모델 로드 실패: {e}")
         
-        # ai-clusturing 클러스터링 모델 확인
+        # ai_clusturing 클러스터링 모델 확인
         clustering_model_path = os.path.join(base_dir, 'results/cluster_models')
         if os.path.exists(clustering_model_path):
             try:
                 # 임포트 모듈
-                if os.path.exists(os.path.join(base_dir, 'ai-clusturing', 'clustering.py')):
+                if os.path.exists(os.path.join(base_dir, 'ai_clusturing', 'clustering.py')):
                     cluster_module = self._import_module('clustering', 
-                                    os.path.join(base_dir, 'ai-clusturing', 'clustering.py'))
+                                    os.path.join(base_dir, 'ai_clusturing', 'clustering.py'))
                     
                     # 모델 로드
                     model_class = getattr(cluster_module, 'ClusteringModel', None)

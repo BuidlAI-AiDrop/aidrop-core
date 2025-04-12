@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  ai-api:
+    build:
+      context: ..
+      dockerfile: ai-api/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../test_data:/app/test_data
+      - ../results:/app/results
+    env_file:
+      - .env
+    environment:
+      - LOG_LEVEL=INFO
+    restart: unless-stopped 

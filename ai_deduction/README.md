@@ -1,4 +1,4 @@
-# AI 추론 모듈 (ai-deduction)
+# AI 추론 모듈 (ai_deduction)
 
 ## 개요
 이 모듈은 이더리움 지갑 주소의 온체인 활동 데이터를 지도 학습 모델을 통해 분석하여 사용자 유형을 분류합니다. 사전에 라벨링된 데이터로 학습된 모델을 활용하여 새로운 지갑 주소가 어떤 유형의 사용자인지 예측합니다.
@@ -46,17 +46,17 @@
 
 ### 모델 훈련하기
 ```bash
-python -m ai-deduction.main train --data_path=/path/to/labeled_data.json --model_type=xgboost
+python -m ai_deduction.main train --data_path=/path/to/labeled_data.json --model_type=xgboost
 ```
 
 ### 주소 분류하기
 ```bash
-python -m ai-deduction.main classify --address=0x123...abc
+python -m ai_deduction.main classify --address=0x123...abc
 ```
 
 ### 모델 평가하기
 ```bash
-python -m ai-deduction.main evaluate --test_data=/path/to/test_data.json
+python -m ai_deduction.main evaluate --test_data=/path/to/test_data.json
 ```
 
 ## AI 파이프라인 단계별 구현

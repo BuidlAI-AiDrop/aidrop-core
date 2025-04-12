@@ -1,2 +1,5 @@
 results/
 logs/
+
+.env
+.env.example

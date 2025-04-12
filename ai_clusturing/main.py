@@ -170,7 +170,7 @@ def analyze_new_address(address_data: Dict, model_dir: str = 'models',
 
 def print_help():
     """사용법 출력"""
-    print("사용법: python -m ai-clusturing.main [command] [options]")
+    print("사용법: python -m ai_clusturing.main [command] [options]")
     print("\n명령어:")
     print("  cluster <data_path>  - 주소 데이터에 대한 클러스터링 실행")
     print("  analyze <data_path>  - 단일 주소 분석 (지갑 특성 추출)")

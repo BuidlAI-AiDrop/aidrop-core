@@ -26,7 +26,7 @@ def analyze_address(address: str, force_refresh: bool = False) -> Dict[str, Any]
 
 def print_help():
     """사용법 출력"""
-    print("사용법: python -m ai-deduction.main [command] [options]")
+    print("사용법: python -m ai_deduction.main [command] [options]")
     print("\n명령어:")
     print("  analyze <address>  - 지갑 주소 분석")
     print("  stats              - 전체 분석 통계 확인")

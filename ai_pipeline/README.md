@@ -1,7 +1,7 @@
-# AI 통합 파이프라인 (ai-pipeline)
+# AI 통합 파이프라인 (ai_pipeline)
 
 ## 개요
-이 모듈은 블록체인 지갑 주소 분석을 위한 종합적인 AI 파이프라인을 구현합니다. 비지도 학습(클러스터링)과 지도 학습(분류) 접근법을 통합하여 이더리움 지갑 주소의 사용자 특성을 분석하고 분류합니다. `ai-clusturing`과 `ai-deduction` 모듈의 기능을 통합하여 엔드투엔드 파이프라인을 제공합니다.
+이 모듈은 블록체인 지갑 주소 분석을 위한 종합적인 AI 파이프라인을 구현합니다. 비지도 학습(클러스터링)과 지도 학습(분류) 접근법을 통합하여 이더리움 지갑 주소의 사용자 특성을 분석하고 분류합니다. `ai_clusturing`과 `ai_deduction` 모듈의 기능을 통합하여 엔드투엔드 파이프라인을 제공합니다.
 
 ## 파일 구조
 - `__init__.py`: 모듈 초기화 파일
@@ -72,25 +72,25 @@
 
 ## 주요 구성 요소간 관계
 
-- **ai-clusturing**: 비지도 학습 접근법을 사용하여 유사한 사용자 그룹을 식별하고 클러스터 프로필 생성
-- **ai-deduction**: 지도 학습 접근법으로 사전 정의된 클래스로 사용자 분류
-- **ai-pipeline**: 두 모듈을 통합하여 종합적인 사용자 분석 제공
+- **ai_clusturing**: 비지도 학습 접근법을 사용하여 유사한 사용자 그룹을 식별하고 클러스터 프로필 생성
+- **ai_deduction**: 지도 학습 접근법으로 사전 정의된 클래스로 사용자 분류
+- **ai_pipeline**: 두 모듈을 통합하여 종합적인 사용자 분석 제공
 
 ## 사용 방법
 
 ### 통합 분석 실행하기
 ```bash
-python -m ai-pipeline.main analyze --address=0x123...abc
+python -m ai_pipeline.main analyze --address=0x123...abc
 ```
 
 ### 모델 훈련하기
 ```bash
-python -m ai-pipeline.main train --data_path=/path/to/data.json
+python -m ai_pipeline.main train --data_path=/path/to/data.json
 ```
 
 ### 도움말 보기
 ```bash
-python -m ai-pipeline.main help
+python -m ai_pipeline.main help
 ```
 
 ## 구현된 AI 파이프라인 단계

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-테스트 데이터를 사용해 ai-clusturing(비지도 학습)과 ai-deduction(지도 학습) 모듈 테스트
+테스트 데이터를 사용해 ai_clusturing(비지도 학습)과 ai_deduction(지도 학습) 모듈 테스트
 """
 
 import json
@@ -27,20 +27,20 @@ def import_module_from_file(module_name, file_path):
     spec.loader.exec_module(module)
     return module
 
-# ai-clusturing 모듈 임포트
+# ai_clusturing 모듈 임포트
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 feature_extraction = import_module_from_file('feature_extraction', 
-                                            os.path.join(base_dir, 'ai-clusturing', 'feature_extraction.py'))
+                                            os.path.join(base_dir, 'ai_clusturing', 'feature_extraction.py'))
 clustering = import_module_from_file('clustering', 
-                                    os.path.join(base_dir, 'ai-clusturing', 'clustering.py'))
+                                    os.path.join(base_dir, 'ai_clusturing', 'clustering.py'))
 cluster_analyzer = import_module_from_file('cluster_analyzer', 
-                                          os.path.join(base_dir, 'ai-clusturing', 'cluster_analyzer.py'))
+                                          os.path.join(base_dir, 'ai_clusturing', 'cluster_analyzer.py'))
 
-# ai-deduction 모듈 임포트
+# ai_deduction 모듈 임포트
 feature_engineering = import_module_from_file('feature_engineering', 
-                                             os.path.join(base_dir, 'ai-deduction', 'feature_engineering.py'))
+                                             os.path.join(base_dir, 'ai_deduction', 'feature_engineering.py'))
 model = import_module_from_file('model', 
-                               os.path.join(base_dir, 'ai-deduction', 'model.py'))
+                               os.path.join(base_dir, 'ai_deduction', 'model.py'))
 
 # 기능 추출기 및 모델 클래스 할당
 ClusterFeatureExtractor = feature_extraction.FeatureExtractor
@@ -346,12 +346,27 @@ def run_clustering(feature_vectors, true_labels):
     os.makedirs('./results/visualizations', exist_ok=True)
     plt.savefig('./results/visualizations/clustering_visualization.png', dpi=300, bbox_inches='tight')
     print(f"클러스터 시각화가 './results/visualizations/clustering_visualization.png'에 저장되었습니다.")
-    
-    # 클러스터링 결과 반환
+
+    # 주소별 클러스터 결과 생성
+    address_cluster_results = {}
+    for i, address in enumerate(addresses):
+        cluster_id = int(cluster_labels[i]) # numpy int를 python int로 변환
+        # cluster_profiles는 클러스터 ID를 키로 가짐
+        profile = cluster_profiles.get(str(cluster_id), {})
+        # NumPy 타입을 Python 기본 타입으로 변환
+        profile = convert_numpy_types(profile) # JSON 직렬화를 위해 변환
+        address_cluster_results[address] = {
+            "cluster_id": cluster_id,
+            "traits": profile # 클러스터의 특성 프로필 저장
+        }
+    print(f"주소별 클러스터 결과 생성 완료 (샘플 수: {len(address_cluster_results)})")
+
+    # 클러스터링 결과 반환 (주소별 결과 포함)
     return {
         'kmeans': clustering_results['kmeans'],
         'processed_df': processed_df,
-        'cluster_profiles': cluster_profiles
+        'cluster_profiles': cluster_profiles,
+        'address_clusters': address_cluster_results # 주소별 결과 추가
     }
 
 def run_classification(feature_vectors, true_labels):
@@ -381,8 +396,8 @@ def run_classification(feature_vectors, true_labels):
             contract_interactions=addr_data['contract_interactions']
         )
         
-        # 유형 라벨 (처음 두 글자만 사용 - D/N, T/H)
-        label = true_labels.get(address, 'unknown')[:3]  # D-T, D-H, N-T, N-H
+        # 유형 라벨 (전체 라벨 사용하도록 수정)
+        label = true_labels.get(address, 'Unknown') # 전체 라벨 사용 (예: 'D-T-A-C', 'N-H-S-I', 'G-T-S', 'R-X-X')
         
         features_list.append(features)
         labels_list.append(label)
@@ -390,13 +405,14 @@ def run_classification(feature_vectors, true_labels):
     # 데이터프레임 변환
     features_df = pd.DataFrame(features_list)
     
-    # 라벨 인코딩
-    label_mapping = {label: idx for idx, label in enumerate(set(labels_list))}
+    # 라벨 인코딩 (다양한 라벨 처리 가능)
+    unique_labels = sorted(list(set(labels_list))) # 라벨 정렬하여 일관성 유지
+    label_mapping = {label: idx for idx, label in enumerate(unique_labels)}
     reverse_mapping = {idx: label for label, idx in label_mapping.items()}
     labels = np.array([label_mapping[label] for label in labels_list])
     
     print(f"데이터 준비 완료: {len(features_df)} 샘플, {len(features_df.columns)} 특성")
-    print(f"라벨 분포: {Counter(labels_list)}")
+    print(f"라벨 분포 (전체 라벨 기준): {Counter(labels_list)}") # 로그 메시지 수정
     
     # 데이터와 라벨 저장
     os.makedirs('./results/classification_data', exist_ok=True)
@@ -417,7 +433,10 @@ def run_classification(feature_vectors, true_labels):
     # 훈련/테스트 데이터 분할
     from sklearn.model_selection import train_test_split
     X_train, X_test, y_train, y_test = train_test_split(
-        features_df.drop(['address', 'label'], axis=1), labels, test_size=0.3, random_state=42, stratify=labels
+        features_df.drop(['address', 'label'], axis=1), 
+        labels, 
+        test_size=0.3, 
+        random_state=42
     )
     
     # 모델 초기화
@@ -438,17 +457,31 @@ def run_classification(feature_vectors, true_labels):
     # 혼동 행렬 시각화
     plt.figure(figsize=(10, 8))
     cm = confusion_matrix(y_test, y_pred)
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=[reverse_mapping[i] for i in range(len(reverse_mapping))], 
+    # 라벨 이름이 길어질 수 있으므로 xticks, yticks 회전 고려
+    plt.xticks(rotation=45, ha='right')
+    plt.yticks(rotation=0)
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+               xticklabels=[reverse_mapping[i] for i in range(len(reverse_mapping))], 
                yticklabels=[reverse_mapping[i] for i in range(len(reverse_mapping))])
     plt.xlabel('Predicted Label')
     plt.ylabel('True Label')
-    plt.title('Confusion Matrix', fontsize=14)
+    plt.title('Confusion Matrix (Full Labels)', fontsize=14) # 제목 수정
     plt.tight_layout()
     plt.savefig('./results/visualizations/confusion_matrix.png', dpi=300, bbox_inches='tight')
     print("혼동 행렬이 './results/visualizations/confusion_matrix.png'에 저장되었습니다.")
     
     # 분류 보고서 생성 및 저장
-    report = classification_report(y_test, y_pred, target_names=[reverse_mapping[i] for i in range(len(reverse_mapping))], output_dict=True)
+    all_numeric_labels = sorted(list(label_mapping.values())) # 전체 데이터셋의 모든 숫자 라벨 (0, 1, 2, ...)
+    all_target_names = [reverse_mapping[i] for i in all_numeric_labels] # 전체 데이터셋의 모든 라벨 이름
+
+    report = classification_report(
+        y_test, 
+        y_pred, 
+        labels=all_numeric_labels, # 보고서에 포함할 라벨 숫자 목록 명시
+        target_names=all_target_names, # labels 인자와 순서/개수 일치
+        output_dict=True,
+        zero_division=0 # 테스트 세트에 없는 라벨의 경우 F1 score 계산 시 0으로 처리
+    )
     with open('./results/classification_data/classification_report.json', 'w') as f:
         json.dump(report, f, indent=2)
     print("분류 보고서가 './results/classification_data/classification_report.json'에 저장되었습니다.")
@@ -488,8 +521,22 @@ def run_classification(feature_vectors, true_labels):
     with open('./results/classification_data/model_summary.json', 'w') as f:
         json.dump(model_summary, f, indent=2)
     print("모델 요약 정보가 './results/classification_data/model_summary.json'에 저장되었습니다.")
-    
-    return model, label_mapping
+
+    # 전체 데이터에 대한 예측 수행
+    print("전체 데이터에 대한 예측 수행 중...")
+    all_features_scaled = model.scaler.transform(features_df.drop(['address', 'label'], axis=1))
+    all_predictions_numeric = model.model.predict(all_features_scaled)
+    all_predictions_labels = [reverse_mapping[pred] for pred in all_predictions_numeric]
+
+    # 주소별 예측 결과 생성
+    address_predictions = {}
+    for address, prediction_label in zip(addresses, all_predictions_labels):
+        address_predictions[address] = prediction_label # 예측된 분류 라벨 저장 (예: 'D-T')
+
+    print(f"주소별 분류 예측 완료 (샘플 수: {len(address_predictions)})")
+
+    # 모델과 주소별 예측 결과 반환
+    return model, address_predictions # 반환값 변경
 
 def generate_combined_report(clustering_results, classification_model, true_labels):
     """
@@ -576,27 +623,95 @@ def main():
     메인 실행 함수
     """
     # 테스트 데이터 로드
+    test_data_file = "blockchain_test_data.json"
+    if not os.path.exists(test_data_file):
+        test_data_file = os.path.join("test_data", test_data_file) # 스크립트 위치 기준으로 경로 수정
+
     try:
-        test_data = load_test_data("blockchain_test_data.json")
+        test_data = load_test_data(test_data_file)
+    except FileNotFoundError:
+        print(f"오류: 테스트 데이터 파일({test_data_file})을 찾을 수 없습니다.")
+        sys.exit(1)
     except Exception as e:
-        print(f"Error: {e}")
-        test_data = load_test_data("test_data/blockchain_test_data.json")
-    
+        print(f"테스트 데이터 로드 중 오류 발생: {e}")
+        sys.exit(1)
+
     # 특성 벡터 추출
     feature_vectors, true_labels = extract_feature_vectors(test_data)
-    
+    all_addresses = [fv['address'] for fv in feature_vectors] # 모든 주소 리스트
+
     # 비지도 학습 (클러스터링) 실행
-    clustering_results = run_clustering(feature_vectors, true_labels)
-    
+    clustering_output = run_clustering(feature_vectors, true_labels)
+    address_clusters = clustering_output['address_clusters'] # 주소별 클러스터 결과
+
     # 지도 학습 (분류) 실행
-    classification_model, test_results = run_classification(feature_vectors, true_labels)
-    
+    classification_model, address_predictions = run_classification(feature_vectors, true_labels) # 반환값 변경됨
+
     # 종합 보고서 생성
-    generate_combined_report(clustering_results, classification_model, true_labels)
-    
+    generate_combined_report(clustering_output, classification_model, true_labels)
+
+    # 주소별 결과 취합 및 저장
+    print("\n=== 주소별 분석 결과 저장 시작 ===")
+    # output_dir = "./results/analysis/testnet" # 테스트 체인이므로 'testnet' 사용 -> chain_id '1' 사용
+    chain_id_for_test = "1" # API 서버에서 사용하는 chain_id 형식에 맞춤
+    output_dir = os.path.join(".", "results", "analysis", chain_id_for_test)
+    os.makedirs(output_dir, exist_ok=True)
+    print(f"결과 저장 디렉토리 (Chain ID: {chain_id_for_test}): {output_dir}")
+
+    saved_count = 0
+    error_count = 0
+    for address in all_addresses:
+        address_lower = address.lower() # 파일명/경로용 소문자 주소
+        try:
+            cluster_data = address_clusters.get(address, {"cluster_id": None, "traits": {}})
+            # traits가 비어있거나 None이면 기본값 처리
+            traits = cluster_data.get("traits") if cluster_data.get("traits") else {}
+            # traits 내부 값들도 JSON 직렬화 가능한지 확인 (convert_numpy_types 이미 적용됨)
+
+            classification_label = address_predictions.get(address, "Unknown") # 예측된 분류 라벨 가져오기
+
+            # 최종 결과 데이터 구조 (API가 기대하는 형식)
+            final_data = {
+                "mbti": classification_label, # 현재는 분류 라벨을 MBTI 필드에 저장
+                "cluster": cluster_data.get("cluster_id"),
+                "traits": traits
+            }
+
+            # 파일 경로 생성 및 저장
+            file_path = os.path.join(output_dir, f"{address_lower}.json")
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(final_data, f, indent=2, ensure_ascii=False)
+            saved_count += 1
+
+        except Exception as e:
+            print(f"오류: 주소 {address}의 결과 저장 중 오류 발생 - {e}")
+            error_count += 1
+
+    print(f"\n주소별 분석 결과 저장 완료: 총 {len(all_addresses)}개 주소 중 {saved_count}개 저장 성공, {error_count}개 저장 실패.")
+
     print("\n=== 테스트 완료 ===")
-    print("클러스터링 결과와 분류 모델이 성공적으로 생성되었습니다.")
-    print("모든 분석 결과와 시각화가 './results/' 디렉토리에 저장되었습니다.")
+    print("클러스터링 결과와 분류 모델이 성공적으로 생성/훈련되었습니다.")
+    print(f"주소별 분석 결과가 '{output_dir}' 디렉토리에 저장되었습니다.")
+    print("기타 분석 결과와 시각화가 './results/' 하위 디렉토리에 저장되었습니다.")
+
+# numpy 타입을 Python 기본 타입으로 변환하는 헬퍼 함수 (main 함수 위로 이동 또는 유지)
+def convert_numpy_types(obj):
+    import numpy as np
+    if isinstance(obj, np.integer):
+        return int(obj)
+    elif isinstance(obj, np.floating):
+        return float(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, dict):
+        return {convert_numpy_types(k): convert_numpy_types(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_numpy_types(item) for item in obj]
+    elif isinstance(obj, tuple):
+        return tuple(convert_numpy_types(item) for item in obj)
+    else:
+        return obj
 
 if __name__ == "__main__":
+    # convert_numpy_types 함수가 main 이전에 정의되도록 위치 조정
     main() 

@@ -10,12 +10,12 @@ import numpy as np
 from typing import Dict, List, Any, Optional, Tuple
 import logging
 
-# ai-clusturing 모듈 임포트
+# ai_clusturing 모듈 임포트
 from ai_clusturing.feature_extraction import FeatureExtractor as ClusterFeatureExtractor
 from ai_clusturing.cluster_analyzer import ClusterFeatureAnalyzer
 from ai_clusturing.clustering import ClusteringModel
 
-# ai-deduction 모듈 임포트
+# ai_deduction 모듈 임포트
 from ai_deduction.feature_engineering import FeatureExtractor as DeductionFeatureExtractor
 from ai_deduction.model import UserClassificationModel, ClusteringModel as DeductionClusteringModel
 from ai_deduction.inference_service import InferenceService
@@ -212,7 +212,7 @@ class IntegratedAnalysisService:
                 if not transactions:
                     return {'error': '트랜잭션 데이터 없음'}
                 
-                # ai-deduction 및 ai-clusturing 모듈에서 사용할 형식으로 데이터 구성
+                # ai_deduction 및 ai_clusturing 모듈에서 사용할 형식으로 데이터 구성
                 address_data = {
                     'address': address,
                     'transactions': transactions,

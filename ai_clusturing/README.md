@@ -1,4 +1,4 @@
-# AI 클러스터링 모듈 (ai-clusturing)
+# AI 클러스터링 모듈 (ai_clusturing)
 
 ## 개요
 이 모듈은 이더리움 지갑 주소의 온체인 활동 데이터를 비지도 학습 기법으로 분석하여 유사한 행동 패턴을 가진 사용자들을 클러스터링합니다. 지갑 주소의 특성을 추출하고, 다양한 클러스터링 알고리즘을 적용하여 사용자 프로필을 생성합니다.
@@ -44,17 +44,17 @@
 
 ### 클러스터링 실행하기
 ```bash
-python -m ai-clusturing.main cluster --data_path=/path/to/data.json --n_clusters=5
+python -m ai_clusturing.main cluster --data_path=/path/to/data.json --n_clusters=5
 ```
 
 ### 특정 주소 분석하기
 ```bash
-python -m ai-clusturing.main analyze --address=0x123...abc
+python -m ai_clusturing.main analyze --address=0x123...abc
 ```
 
 ### 모델 평가하기
 ```bash
-python -m ai-clusturing.main evaluate --model_path=/path/to/model.pkl
+python -m ai_clusturing.main evaluate --model_path=/path/to/model.pkl
 ```
 
 ## AI 파이프라인 단계별 구현

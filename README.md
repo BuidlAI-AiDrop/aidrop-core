@@ -254,14 +254,14 @@ flowchart TB
    - **Token Holdings**: Diversity of tokens, balance distributions
    - **Network Metrics**: Unique counterparties, in/out transaction ratios
 
-2. **Unsupervised Learning (ai-clusturing)**
+2. **Unsupervised Learning (ai_clusturing)**
    - **Algorithms**: K-Means, DBSCAN, Hierarchical Clustering, Gaussian Mixture Models
    - **Dimensionality Reduction**: t-SNE for visualization
    - **Cluster Analysis**: Feature importance per cluster, inter-cluster distance
    - **Silhouette Analysis**: Optimal cluster number determination
    - **Visualization**: 2D representation of user clusters with profiles
 
-3. **Supervised Learning (ai-deduction)**
+3. **Supervised Learning (ai_deduction)**
    - **Algorithm**: Random Forest Classifier
    - **Training Process**: 80/20 train-test split with cross-validation
    - **Model Evaluation**: Accuracy (75-80%), confusion matrix, classification report
@@ -277,7 +277,7 @@ flowchart TB
    - **16+ Personality Types**: Combinations of these axes (e.g., D-T-S-C, N-H-A-I)
    - **Distribution Analysis**: Population distribution across types
 
-5. **Integration Pipeline (ai-pipeline)**
+5. **Integration Pipeline (ai_pipeline)**
    - Combines clustering and classification results
    - Cross-validates findings between supervised and unsupervised approaches
    - Generates comprehensive user profiles with prediction confidence
@@ -433,14 +433,14 @@ flowchart TB
    - **토큰 보유량**: 토큰 다양성, 잔액 분포
    - **네트워크 지표**: 고유 거래 상대방, 입출금 트랜잭션 비율
 
-2. **비지도 학습 (ai-clusturing)**
+2. **비지도 학습 (ai_clusturing)**
    - **알고리즘**: K-평균, DBSCAN, 계층적 클러스터링, 가우시안 혼합 모델
    - **차원 축소**: t-SNE를 통한 시각화
    - **클러스터 분석**: 클러스터별 특성 중요도, 클러스터 간 거리
    - **실루엣 분석**: 최적 클러스터 수 결정
    - **시각화**: 사용자 클러스터의 2D 표현과 프로필
 
-3. **지도 학습 (ai-deduction)**
+3. **지도 학습 (ai_deduction)**
    - **알고리즘**: 랜덤 포레스트 분류기
    - **훈련 과정**: 교차 검증이 포함된 80/20 훈련-테스트 분할
    - **모델 평가**: 정확도(75-80%), 혼동 행렬, 분류 보고서
@@ -456,7 +456,7 @@ flowchart TB
    - **16개 이상의 성격 유형**: 이러한 축의 조합(예: D-T-S-C, N-H-A-I)
    - **분포 분석**: 유형별 인구 분포
 
-5. **통합 파이프라인 (ai-pipeline)**
+5. **통합 파이프라인 (ai_pipeline)**
    - 클러스터링 및 분류 결과 결합
    - 지도 및 비지도 접근법 간의 결과 교차 검증
    - 예측 신뢰도가 포함된 종합적인 사용자 프로필 생성

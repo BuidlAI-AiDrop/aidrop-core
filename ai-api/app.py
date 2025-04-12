@@ -125,7 +125,7 @@ class AnalysisResponse(BaseModel):
     message: str = Field(..., description="상태 메시지")
     requestId: Optional[str] = Field(None, description="요청 ID")
     mbti: Optional[str] = Field(None, description="분석된 MBTI 유형 (완료 시)")
-    imageUrl: Optional[str] = Field(None, description="생성된 프로필 메타데이터 JSON URL (완료 시)")
+    tokenUrl: Optional[str] = Field(None, description="생성된 프로필 메타데이터 JSON URL (완료 시)")
     cluster: Optional[int] = Field(None, description="분석된 클러스터 ID (완료 시)")
     traits: Optional[Dict[str, Any]] = Field(None, description="분석된 사용자 특성 (완료 시)")
 
@@ -476,7 +476,7 @@ async def get_analysis_result_endpoint(request: ResultRequest):
                 message="분석이 완료되었습니다.",
                 requestId=request_id,
                 mbti=result_data.get("mbti_type"),
-                imageUrl=metadata_url,
+                tokenUrl=metadata_url,
                 cluster=result_data.get("cluster"),
                 traits=result_data.get("traits")
             )
